@@ -1,59 +1,138 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { router, Stack } from "expo-router";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { useEffect } from "react";
+import { useSegments, usePathname } from "expo-router";
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
+  return (
+    <AuthProvider>
+      <MainLayout />
+    </AuthProvider>
+  );
 }
 
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+function MainLayout() {
+  const { authState } = useAuth();
+  const segments = useSegments();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (authState?.authenticated && pathname.startsWith("/(auth)")) {
+      console.log("Caiu aqui!!!!");
+      router.replace("/(private)/ecomorador/pages/home/page");
+    }
+  }, [authState?.authenticated, pathname]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <>
+      {authState?.authenticated ? (
+        <Stack>
+          <Stack.Screen
+            name="(private)/ecomorador/pages/home/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/profile/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/solicitarColeta/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/solicitarColeta/coletasEmEspera/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/solicitarColeta/coletasAgendadas/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/solicitarColeta/confirmarColeta/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/solicitarColeta/novaColeta/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/transferirReceber/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/transferirReceber/pagar/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/transferirReceber/pagar/pagarComChave/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/transferirReceber/receber/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/transferirReceber/extrato/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/ecocoins/boasCausas/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/manutencao/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/beneficios/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/beneficios/iptu/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/beneficios/supermercado/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/beneficios/supermercado/meusCupons/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecomorador/pages/beneficios/supermercado/cuponsDisponiveis/page"
+            options={{ headerShown: false }}
+          />
+        </Stack>
+      ) : (
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(auth)/signUp/page"
+            options={{ headerShown: false, title: "Cadastro" }}
+          />
+          <Stack.Screen
+            name="(auth)/signUp/ecomorador/page"
+            options={{ headerShown: false, title: "Cadastro" }}
+          />
+          <Stack.Screen
+            name="(auth)/signUp/ecomorador/telaEcolixeira"
+            options={{ headerShown: false, title: "Tela ecolixeira" }}
+          />
+          <Stack.Screen
+            name="(auth)/logIn/page"
+            options={{ headerShown: false, title: "Login" }}
+          />
+          <Stack.Screen
+            name="(auth)/logIn/ecomorador/page"
+            options={{ headerShown: false, title: "Login" }}
+          />
+        </Stack>
+      )}
+    </>
   );
 }
