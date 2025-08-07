@@ -10,10 +10,10 @@ import PageTop from "../../../../components/PageTop";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import CustomModal from "../../../../components/popUps/CustomModal";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect, useRef } from "react";
 import apiUrl from "../../../../utils/api_url.json";
 import { useAuth } from "../../../../contexts/AuthContext";
+import mqtt, { MqttClient } from "mqtt";
 
 const Profile = () => {
   const [modalVisibleEditarDados, setModalVisibleEditarDados] = useState(false);
@@ -26,24 +26,47 @@ const Profile = () => {
 
   const { authState } = useAuth();
 
+  const client = useRef<MqttClient | null>(null);
+  const requestId = useRef(Date.now().toString());
+
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/editProfileResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/editProfileResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      window.alert(formatedData.message);
+    });
+  }, []);
+
   const handleSubmit = async () => {
     console.log({ nomeValue, emailValue });
-    setEmailValue("");
-    setNomeValue("");
 
-    const result = await axios.post(`${API_URL}/editProfile`, {
+    const payload = {
       name: nomeValue,
       email: emailValue,
-    });
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/editProfile", JSON.stringify(payload));
 
-    if (result.data.updated) {
-      alert(result.data.message);
-    } else {
-      alert(result.data.message);
-    }
+    setEmailValue("");
+    setNomeValue("");
     //setModalVisibleEditarDados(true)
   };
-
 
   return (
     <ScrollView>

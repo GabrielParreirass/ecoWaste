@@ -9,6 +9,10 @@ import Etapa4 from "./etapas/etapa4";
 import Etapa5 from "./etapas/etapa5";
 import { useAuth } from "../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
+import apiUrl from "../../../../../utils/api_url.json";
+import * as Location from "expo-location";
+import { LocationObjectCoords } from "expo-location";
+
 
 const NovaColeta = () => {
   const [progression, setProgression] = useState("1");
@@ -16,7 +20,8 @@ const NovaColeta = () => {
   const [peso, setPeso] = useState("");
   const [diaSem, setDiaSem] = useState("");
   const [horario, setHorario] = useState("");
- 
+  const [location, setLocation] = useState<LocationObjectCoords | null>(null);
+  const API_URL = apiUrl.apiUrl;
 
   const { authState } = useAuth();
 
@@ -30,19 +35,17 @@ const NovaColeta = () => {
 
 
   useEffect(() => {
-    client.current = mqtt.connect("ws://192.168.18.80:9001");
+    client.current = mqtt.connect(API_URL);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");
-
-      console.log('RequestId 1: ', requestId.current)
 
       client.current?.subscribe(
         `user/agendarColetaResponse/${requestId.current}`,
         (err) => {
           if (!err) {
             console.log(
-              `📡 Inscrito no tópico user/agendarColetaResponse/${requestId}`
+              `📡 Inscrito no tópico user/agendarColetaResponse/${requestId.current}`
             );
           }
         }
@@ -51,7 +54,20 @@ const NovaColeta = () => {
 
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedMessage = JSON.parse(message.toString())
+      alert(formatedMessage.message)
     });
+
+    (async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permissão de localização negada");
+      return;
+    }
+
+    const currentLocation = await Location.getCurrentPositionAsync({});
+    setLocation(currentLocation.coords);
+  })();
 
     return () => {
       client.current?.end();
@@ -65,7 +81,9 @@ const NovaColeta = () => {
       peso,
       diaSem,
       horario,
-      requestId: requestId.current
+      requestId: requestId.current,
+      latitude: location?.latitude.toString(),
+      longitude: location?.longitude.toString()
     };
 
     console.log('RequestId 2: ', requestId.current)

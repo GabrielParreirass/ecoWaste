@@ -1,62 +1,129 @@
-import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
 import PageTop from "../../../../components/PageTop";
 import { useAuth } from "../../../../contexts/AuthContext";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
+import mqtt, { MqttClient } from "mqtt";
+import apiUrl from "../../../../utils/api_url.json";
 
 const HomeEcomorador = () => {
-  const { onLogout } = useAuth();
+  const { onLogout, authState } = useAuth();
+  const [temLixeira, setTemLixeira] = useState(true);
+  const [coletas, setColetas] = useState([]);
+  const loggedEmail = authState?.loggedEmail;
+
+  const client = useRef<MqttClient | null>(null);
+
+  const requestId = useRef(Date.now().toString());
+  const API_URL = apiUrl.apiUrl;
+
+  const options = {
+        clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
+        username: "csilab", 
+        password: "WhoAmI#2024", 
+      };
+
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL, options);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/getUserDataResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/getUserDataResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      setTemLixeira(formatedData.user.temLixeira);
+      setColetas(formatedData.user.coletas);
+    });
+
+    const payload = {
+      email: loggedEmail,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/getUserData", JSON.stringify(payload));
+  }, []);
 
   return (
     <ScrollView>
       <PageTop profile={true} />
       <Text style={styles.title}>Bem-vindo a sua central de serviços</Text>
       <View style={styles.containerCards}>
-        <Pressable
+        {temLixeira ? (
+          <View>
+            <TouchableOpacity activeOpacity={0.7} style={styles.card}>
+              <Entypo name="trash" size={60} color="white" />
+              <Text style={styles.textCard}>
+                {coletas.length} Coleta(s) em espera
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() =>
+                router.navigate(
+                  "/(private)/ecomorador/pages/solicitarColeta/page"
+                )
+              }
+            >
+              <Entypo name="trash" size={60} color="white" />
+              <Text style={styles.textCard}>Solicitar coleta</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <TouchableOpacity
           style={styles.card}
-          onPress={() =>
-            router.navigate("/(private)/ecomorador/pages/solicitarColeta/page")
-          }
-        >
-          <Entypo name="trash" size={60} color="white" />
-          <Text style={styles.textCard}>Solicitar coleta</Text>
-        </Pressable>
-        <Pressable
-          style={styles.card}
+          activeOpacity={0.7}
           onPress={() =>
             router.navigate("/(private)/ecomorador/pages/ecocoins/page")
           }
         >
           <Entypo name="wallet" size={60} color="white" />
           <Text style={styles.textCard}>Eco coins</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={styles.containerCards}>
-        <Pressable
+        <TouchableOpacity
           style={styles.card}
+          activeOpacity={0.7}
           onPress={() =>
             router.navigate("/(private)/ecomorador/pages/manutencao/page")
           }
         >
           <FontAwesome5 name="tools" size={55} color="white" />
           <Text style={styles.textCard}>Manutenção</Text>
-        </Pressable>
-        <Pressable
+        </TouchableOpacity>
+        <TouchableOpacity
           style={styles.card}
+          activeOpacity={0.7}
           onPress={() =>
             router.navigate("/(private)/ecomorador/pages/beneficios/page")
           }
         >
           <FontAwesome5 name="medal" size={55} color="white" />
           <Text style={styles.textCard}>Benefícios</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={styles.containerButton}>
-        <Pressable style={styles.button} onPress={() => onLogout!()}>
+        <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={() => onLogout!()}>
           <Text style={styles.textButton}>Sair</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

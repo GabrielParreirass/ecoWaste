@@ -4,10 +4,8 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   TouchableOpacity,
   StyleSheet,
-  Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomModalProps from "../../types/CustomModalProps";
@@ -50,21 +48,29 @@ const CustomModal = ({
           )}
 
           <View style={styles.buttonContainer}>
-            <Pressable onPress={onClose} style={styles.button}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onClose}
+              style={styles.button}
+            >
               {closeButtonText ? (
                 <Text style={styles.textButton}>{closeButtonText}</Text>
               ) : (
                 <Text style={styles.textButton}>Fechar</Text>
               )}
-            </Pressable>
+            </TouchableOpacity>
             {onConfirm && (
-              <Pressable onPress={onConfirm} style={styles.button}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={onConfirm}
+                style={styles.button}
+              >
                 {confirmButtonText ? (
                   <Text style={styles.textButton}>{confirmButtonText}</Text>
                 ) : (
                   <Text style={styles.textButton}>Confirmar</Text>
                 )}
-              </Pressable>
+              </TouchableOpacity>
             )}
           </View>
         </LinearGradient>

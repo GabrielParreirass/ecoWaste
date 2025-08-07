@@ -1,15 +1,14 @@
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
-import React from "react";
+import React, { useRef } from "react";
 import PageTop from "../../../../../../components/PageTop";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import DefaultButton from "../../../../../../components/DefaultButton";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import axios from "axios";
 import { useAuth } from "../../../../../../contexts/AuthContext";
 import apiUrl from "../../../../../../utils/api_url.json";
 import QRCode from "react-native-qrcode-svg";
+import mqtt, { MqttClient } from "mqtt";
 
 const MeusCupons = () => {
   const [showQrCode, setShowQrCode] = useState(false);
@@ -19,17 +18,49 @@ const MeusCupons = () => {
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const client = useRef<MqttClient | null>(null);
 
-  const fetchData = async () => {
-    const response = await axios.post(`${API_URL}/getUserData`, {
-      loggedEmail,
+  const requestId = useRef(Date.now().toString());
+
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/getUserDataResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            
+            console.log(
+              `📡 Inscrito no tópico user/getUserDataResponse/${requestId.current}`
+            );
+          }
+        }
+      );
     });
 
-    setCupons(response.data.cupons);
-  };
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      setCupons(formatedData.user.cupons)
+    });
+
+    const payload = {
+      email: loggedEmail,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/getUserData", JSON.stringify(payload));
+  }, []);
+
+  // const fetchData = async () => {
+  //   const response = await axios.post(`${API_URL}/getUserData`, {
+  //     loggedEmail,
+  //   });
+
+  //   setCupons(response.data.cupons);
+  // };
 
   return (
     <ScrollView>
@@ -44,7 +75,7 @@ const MeusCupons = () => {
           <View style={styles.containerTitle}>
             <Text style={styles.title}>SEU QR CODE DE DESCONTO:</Text>
           </View>
-          <View style={{ display: "flex", alignItems: "center", padding:10 }}>
+          <View style={{ display: "flex", alignItems: "center", padding: 10 }}>
             <QRCode
               value={qrValue}
               size={200}
@@ -72,7 +103,7 @@ const MeusCupons = () => {
                 style={styles.key}
                 onPress={() => {
                   const formatedId = i.id.toString();
-                  setQrValue(formatedId)
+                  setQrValue(formatedId);
                   setShowQrCode(true);
                 }}
                 key={i.id}

@@ -4,11 +4,11 @@ import PageTop from "../../../../../../../components/PageTop";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DefaultButton from "../../../../../../../components/DefaultButton";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CustomModal from "../../../../../../../components/popUps/CustomModal";
 import { useAuth } from "../../../../../../../contexts/AuthContext";
 import apiUrl from "../../../../../../../utils/api_url.json";
-import axios from "axios";
+import mqtt, { MqttClient } from "mqtt";
 
 interface typePaymentKey {
   id: string;
@@ -25,42 +25,75 @@ const PagarComChave = () => {
   const [idKey, setIdKey] = useState("");
   const [fraseModal, setFraseModal] = useState("");
   const API_URL = apiUrl.apiUrl;
+  const client = useRef<MqttClient | null>(null);
+  const requestId = useRef(Date.now().toString());
 
   const { authState } = useAuth();
 
   const loggedEmail = authState?.loggedEmail;
 
   useEffect(() => {
-    fetchKeys();
-  }, []);
+    client.current = mqtt.connect(API_URL);
 
-  const fetchKeys = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/getPaymentKeys`, {
-        email: loggedEmail,
-      });
-      setPaymentKeys(response.data.paymentKeys);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
 
-  const handlePagamento = async () => {
-    const response = await axios.post(`${API_URL}/paymentWithKey`, {
-      loggedEmail,
-      emailDestinatario,
-      valorPagamento,
-      idKey
+      client.current?.subscribe(
+        `user/getPaymentKeysResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/getPaymentKeysResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+      client.current?.subscribe(
+        `user/paymentWithKeyResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/paymentWithKeyResponse/${requestId.current}`
+            );
+          }
+        }
+      );
     });
 
-    window.alert(response.data.message);
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      if (topic == `user/getPaymentKeysResponse/${requestId.current}`) {
+        const formatedData = JSON.parse(message.toString());
+        setPaymentKeys(formatedData.paymentKeys);
+      }
+      if (topic == `user/paymentWithKeyResponse/${requestId.current}`) {
+        const formatedData = JSON.parse(message.toString());
+        if (formatedData.message == "Operação concluída com sucesso!") {
+          const chavesAtualizadas = paymentKeys.filter(
+            (chave: any) => chave.id !== idKey
+          );
+          setPaymentKeys(chavesAtualizadas);
+          window.alert(formatedData.message)
+        }
+      }
+    });
 
-    if(response.data.message == "Operação concluída com sucesso!"){
-      const chavesAtualizadas = paymentKeys.filter(
-        (chave: any) => chave.id !== idKey
-      );
-      setPaymentKeys(chavesAtualizadas)
-    }
+    const payload = {
+      email: loggedEmail,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/getPaymentKeys", JSON.stringify(payload));
+  }, []);
+
+  const handlePagamento = async () => {
+    const payload = {
+      loggedEmail,
+      emailDestinatario,
+      valorPagamento: parseFloat(valorPagamento),
+      idKey,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/paymentWithKey", JSON.stringify(payload));
 
     setEmailDestinatario("");
     setValorPagamento("");
@@ -86,11 +119,12 @@ const PagarComChave = () => {
             <Pressable
               onPress={() => {
                 setModalConfirmDataVisible(true);
-                setFraseModal(`Informações da chave de pagamento: \nDestinatario: ${i.recebedor} \nValor: E$${i.valor},00 \nConfirme para realizar o pagamento.`);
+                setFraseModal(
+                  `Informações da chave de pagamento: \nDestinatario: ${i.recebedor} \nValor: E$${i.valor},00 \nConfirme para realizar o pagamento.`
+                );
                 setEmailDestinatario(i.recebedor);
                 setValorPagamento(i.valor);
                 setIdKey(i.id);
-                
               }}
               style={styles.key}
               key={index}

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable } from "react-native";
 import { router, Router } from "expo-router";
@@ -28,20 +28,21 @@ const Index = () => {
           style={styles.imgHome}
         />
         <View style={styles.containerButtons}>
-          <Pressable
+          <TouchableOpacity activeOpacity={0.7}
             style={styles.button}
             onPress={() => router.navigate("/(auth)/logIn/page")}
           >
             <Text style={styles.textButton}>LogIn</Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable
+          <TouchableOpacity
+          activeOpacity={0.7}
             style={styles.button}
             onPress={() => router.navigate("/(auth)/signUp/page")}
             
           >
             <Text style={styles.textButton}>Cadastro</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
 

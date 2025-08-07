@@ -6,16 +6,20 @@ import {
   TextInput,
   Pressable,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PageTop from "../../../components/PageTop";
 import { router } from "expo-router";
 import CustomModal from "../../../components/popUps/CustomModal";
 import axios from "axios";
 import apiUrl from "../../../utils/api_url.json";
 import { useAuth } from "../../../contexts/AuthContext";
+import mqtt, { MqttClient } from "mqtt";
 
-const EcomoradorSignUp = () => {
+const EcotaxistaSignUp = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [loginModalVisible, setLoginModalVisible] = useState(false);
@@ -24,19 +28,55 @@ const EcomoradorSignUp = () => {
   const [emailValue, setEmailValue] = useState("");
   const [psswdValue, setPsswdValue] = useState("");
 
-  const {onRegister} = useAuth();
+  const { onRegister } = useAuth();
 
   const API_URL = apiUrl.apiUrl;
+  const client = useRef<MqttClient | null>(null);
+  const requestId = useRef(Date.now().toString());
 
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
 
-  const register = async() =>{
-    const result = await onRegister!(nomeValue, emailValue, psswdValue)
-    if(result.create){
-      setModalVisible(true)
-    }else{
-      alert(result.message)
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/verificateOtpResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/verificateOtpResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      if (topic == `user/verificateOtpResponse/${requestId.current}`) {
+        if (formatedData.otpVerified) {
+          alert(formatedData.message);
+          setModalVisible(false);
+          router.navigate("/(auth)/logIn/ecomorador/page");
+        } else {
+          alert(formatedData.message);
+        }
+      }
+    });
+  }, []);
+
+  const register = async () => {
+    const role = "ecotaxista"
+    const result = await onRegister!(nomeValue, emailValue, psswdValue, role);
+    console.log(result);
+    if (result.create) {
+      setModalVisible(true);
+    } else {
+      alert(result.message);
     }
-  }
+  };
 
   const handleSubmit = async () => {
     if (
@@ -46,40 +86,35 @@ const EcomoradorSignUp = () => {
     ) {
       setAlertModalVisible(true);
     } else {
-
-      console.log("iniciando cadastro")
+      console.log("iniciando cadastro");
 
       register();
-
     }
   };
 
-  const handleConfirmOtp = async (otpInput:string) =>{
-
-    const response = await axios.post(`${API_URL}/verificateOtp`, {
+  const handleConfirmOtp = async (otpInput: string) => {
+    const payload = {
       email: emailValue,
-      otp: otpInput
-    })
-
-    console.log(response.data)
-
-    if(response.data.otpVerified){
-      alert(response.data.message)
-      setModalVisible(false)
-      router.navigate("/(auth)/logIn/ecomorador/page")
-    }else{
-      alert(response.data.message)
-    }
-
-    
-  }
+      otp: otpInput,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/verificateOtp", JSON.stringify(payload));
+  };
 
   return (
-    <View>
-      <ScrollView>
+    <KeyboardAvoidingView 
+      style={styles.keyboardAvoidingView}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <ScrollView 
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <PageTop />
         <View style={styles.container}>
-          <Text> Olá, ecomorador, vamos cadastrá-lo</Text>
+          <Text style={styles.title}> Olá, ecotaxista, vamos cadastrá-lo</Text>
           <Image
             source={require("../../../../assets/images/imgEcomorador2.png")}
             style={styles.imgEcomorador}
@@ -109,13 +144,13 @@ const EcomoradorSignUp = () => {
         </View>
 
         <View style={styles.containerButtons}>
-          <Pressable style={styles.button} onPress={() => router.back()}>
+          <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={() => router.back()}>
             <Text style={styles.textButton}>Voltar</Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable style={styles.button} onPress={() => handleSubmit()}>
+          <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={() => handleSubmit()}>
             <Text style={styles.textButton}>Cadastrar</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -127,7 +162,7 @@ const EcomoradorSignUp = () => {
         inputValue={inputValue}
         setInputValue={setInputValue}
         onConfirm={() => {
-          handleConfirmOtp(inputValue)
+          handleConfirmOtp(inputValue);
         }}
       />
       <CustomModal
@@ -149,17 +184,24 @@ const EcomoradorSignUp = () => {
         inputValue={inputValue}
         setInputValue={setInputValue}
         onConfirm={() => {
-          router.navigate("/(auth)/logIn/ecomorador/page")
+          router.navigate("/(auth)/logIn/ecomorador/page");
         }}
         confirmButtonText="Ir para Login"
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
-export default EcomoradorSignUp;
+export default EcotaxistaSignUp;
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
   container: {
     alignItems: "center",
     justifyContent: "center",
@@ -170,6 +212,11 @@ const styles = StyleSheet.create({
     width: 150,
     marginTop: 27,
   },
+  title:{
+    color:'green',
+    fontWeight:"bold",
+    fontSize:18
+  },
   input: {
     borderBottomColor: "#0fa05f",
     borderBottomWidth: 2,
@@ -179,7 +226,7 @@ const styles = StyleSheet.create({
   containerInput: {
     padding: 20,
     color: "#0fa05f",
-    flex:1,
+    flex: 1,
   },
   containerButtons: {
     display: "flex",

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import PageTop from "../../../../components/PageTop";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -23,7 +23,8 @@ const Beneficios = () => {
         </Text>
       </View>
       <View style={styles.containerBtns}>
-        <Pressable
+        <TouchableOpacity
+        activeOpacity={0.7}
           onPress={() =>
             router.navigate("/(private)/ecomorador/pages/beneficios/iptu/page")
           }
@@ -37,8 +38,9 @@ const Beneficios = () => {
             <FontAwesome6 name="house-chimney" size={80} color="white" />
             <Text style={styles.textButton}>Desconto no IPTU</Text>
           </LinearGradient>
-        </Pressable>
-        <Pressable
+        </TouchableOpacity>
+        <TouchableOpacity
+        activeOpacity={0.7}
           onPress={() =>
             router.navigate(
               "/(private)/ecomorador/pages/beneficios/supermercado/page"
@@ -54,7 +56,7 @@ const Beneficios = () => {
             <Foundation name="shopping-cart" size={80} color="white" />
             <Text style={styles.textButton}>Descontos no supermercado</Text>
           </LinearGradient>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <View style={{ width: "70%", margin: "auto" }}>
