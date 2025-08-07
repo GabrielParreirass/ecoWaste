@@ -1,12 +1,12 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PageTop from "../../../../../components/PageTop";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useAuth } from "../../../../../contexts/AuthContext";
-import apiUrl from "../../../../../utils/api_url.json";
-import axios from "axios";
 import mqtt, { MqttClient } from "mqtt";
+import apiUrl from "../../../../../utils/api_url.json";
+
 
 interface tipoColeta {
   peso: String;
@@ -17,38 +17,62 @@ interface tipoColeta {
 }
 
 const ColetasEmEspera = () => {
+
   const API_URL = apiUrl.apiUrl;
 
   const [showEntulhos, setShowEntulhos] = useState(false);
   const [showResiduos, setShowResiduos] = useState(false);
-  const [coletas, setColetas] = useState([]);
+  const [coletas, setColetas] = useState({"coletas":[]});
   const [filteredColetas, setFilteredColetas] = useState([]);
 
+  const client = useRef<MqttClient | null>(null);
+
+  const requestId = useRef(Date.now().toString());
+
   useEffect(() => {
-    fetchColetas();
-  }, []);
+    client.current = mqtt.connect(API_URL);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/getColetasResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log("requestId 1: ", requestId)
+            console.log(
+              `📡 Inscrito no tópico user/getColetasResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedColetas = JSON.parse(message.toString())
+      setColetas(formatedColetas)
+    });
+
+    const payload = {
+      email: userEmail,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/getColetas", JSON.stringify(payload));
+  }, []); 
+
+ 
 
   const { authState } = useAuth();
 
   const userEmail = authState?.loggedEmail;
 
-  const fetchColetas = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/getColetas`, {
-        email: userEmail,
-      });
-      console.log(response.data.coletas);
-      setColetas(response.data.coletas);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const setFilterColetas = (type: string) => {
+
     if (type === "Todos") {
-      setFilteredColetas(coletas);
+      setFilteredColetas(coletas.coletas);
     } else {
-      const filtered = coletas.filter((i: tipoColeta) => i.type === type);
+      const filtered = coletas.coletas.filter((i: tipoColeta) => i.type === type);
       setFilteredColetas(filtered);
     }
   };

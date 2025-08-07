@@ -1,13 +1,13 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import DefaultButtonProps from "../types/DefaultButtonProps";
 
 const DefaultButton = ({ text, onPressButton }: DefaultButtonProps) => {
   return (
     <View>
-      <Pressable style={styles.button} onPress={onPressButton}>
+      <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={onPressButton}>
         <Text style={styles.textButton}>{text}</Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };

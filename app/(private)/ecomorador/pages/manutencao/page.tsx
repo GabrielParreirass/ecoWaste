@@ -7,22 +7,51 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 import DefaultButton from "../../../../components/DefaultButton";
 import { router } from "expo-router";
 import CustomModal from "../../../../components/popUps/CustomModal";
-import { useState } from "react";
-import axios from "axios";
-import apiUrl from "../../../../utils/api_url.json";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
+import mqtt, { MqttClient } from "mqtt";
+import apiUrl from "../../../../utils/api_url.json";
 
 const Manutencao = () => {
-  const API_URL = apiUrl.apiUrl;
   const [modalVisible, setmodalVisible] = useState(false);
   const { authState } = useAuth();
   const userEmail = authState?.loggedEmail;
+  const client = useRef<MqttClient | null>(null);
+  const requestId = useRef(Date.now().toString());
+  const API_URL = apiUrl.apiUrl;
+
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/manutencaoResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/manutencaoResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      window.alert(formatedData.message);
+    });
+  }, []);
 
   const sendRequest = async (type: string) => {
-    const response = await axios.post(`${API_URL}/addManutencao`, {
+    const payload = {
       userEmail,
       type,
-    });
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/manutencao", JSON.stringify(payload));
   };
 
   return (

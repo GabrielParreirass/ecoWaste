@@ -27,6 +27,23 @@ function MainLayout() {
     <>
       {authState?.authenticated ? (
         <Stack>
+          
+          <Stack.Screen
+            name="(private)/ecotaxista/pages/home/page"
+            options={{ headerShown: false }}
+          />
+           <Stack.Screen
+            name="(private)/ecotaxista/pages/reservas/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecotaxista/pages/residuosDisponiveis/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(private)/ecotaxista/pages/residuosDisponiveis/reservarColeta/page"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="(private)/ecomorador/pages/home/page"
             options={{ headerShown: false }}
@@ -43,14 +60,8 @@ function MainLayout() {
             name="(private)/ecomorador/pages/solicitarColeta/coletasEmEspera/page"
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="(private)/ecomorador/pages/solicitarColeta/coletasAgendadas/page"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="(private)/ecomorador/pages/solicitarColeta/confirmarColeta/page"
-            options={{ headerShown: false }}
-          />
+          
+          
           <Stack.Screen
             name="(private)/ecomorador/pages/solicitarColeta/novaColeta/page"
             options={{ headerShown: false }}
@@ -124,6 +135,10 @@ function MainLayout() {
             options={{ headerShown: false, title: "Tela ecolixeira" }}
           />
           <Stack.Screen
+            name="(auth)/signUp/ecotaxista/page"
+            options={{ headerShown: false, title: "Login" }}
+          />
+          <Stack.Screen
             name="(auth)/logIn/page"
             options={{ headerShown: false, title: "Login" }}
           />
@@ -131,6 +146,11 @@ function MainLayout() {
             name="(auth)/logIn/ecomorador/page"
             options={{ headerShown: false, title: "Login" }}
           />
+          <Stack.Screen
+            name="(auth)/logIn/ecotaxista/page"
+            options={{ headerShown: false, title: "Login" }}
+          />
+
         </Stack>
       )}
     </>

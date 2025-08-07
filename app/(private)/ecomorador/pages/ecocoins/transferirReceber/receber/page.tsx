@@ -11,13 +11,13 @@ import PageTop from "../../../../../../components/PageTop";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { router } from "expo-router";
 import DefaultButton from "../../../../../../components/DefaultButton";
 import CustomModal from "../../../../../../components/popUps/CustomModal";
 import QRCode from "react-native-qrcode-svg";
 import { useAuth } from "../../../../../../contexts/AuthContext";
-import axios from "axios";
+import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../../utils/api_url.json";
 
 const Receber = () => {
@@ -27,11 +27,36 @@ const Receber = () => {
   const [valor, setValor] = useState("");
   const [pagador, setPagador] = useState("");
   const [fraseModal, setFraseModal] = useState("");
+  const { authState } = useAuth();
+  const loggedEmail = authState?.loggedEmail;
+  const client = useRef<MqttClient | null>(null);
+  const requestId = useRef(Date.now().toString());
   const API_URL = apiUrl.apiUrl;
 
-  const { authState } = useAuth();
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
 
-  const loggedEmail = authState?.loggedEmail;
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/sendPaymentKeyResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/sendPaymentKeyResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      window.alert(formatedData.message)
+    });
+  }, []);
 
   const generateQRCode = (jsonData: string) => {
     try {
@@ -46,13 +71,15 @@ const Receber = () => {
   };
 
   const handleSendPaymentKey = async () => {
-    const response = await axios.post(`${API_URL}/sendPaymentKey`, {
+
+    const payload = {
       devedor: pagador,
       valor: valor,
       recebedor: loggedEmail,
-    });
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/sendPaymentKey", JSON.stringify(payload));
 
-    window.alert(response.data.message);
     setPagador("");
     setValor("");
   };

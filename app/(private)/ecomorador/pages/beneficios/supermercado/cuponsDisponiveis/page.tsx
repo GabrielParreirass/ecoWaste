@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import PageTop from "../../../../../../components/PageTop";
 import DefaultButton from "../../../../../../components/DefaultButton";
 import { router } from "expo-router";
@@ -7,26 +7,59 @@ import { useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CustomModal from "../../../../../../components/popUps/CustomModal";
 import { useAuth } from "../../../../../../contexts/AuthContext";
-import axios from "axios";
+import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../../utils/api_url.json";
 
 const CuponsDisponiveis = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [textoModal, setTextoModal] = useState("");
-  const API_URL = apiUrl.apiUrl;
+  
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
   const [cupponName, setCupponName] = useState("");
   const [cupponValue, setCupponValue] = useState("");
+  
+  const client = useRef<MqttClient | null>(null);
+  
+  const requestId = useRef(Date.now().toString());
+  const API_URL = apiUrl.apiUrl;
+
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/addCuponResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/addCuponResponse/${requestId.current}`
+            );
+          }
+        }
+      );
+    });
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedMessage = JSON.parse(message.toString());
+      alert(formatedMessage.message);
+    });
+  }, []);
 
   const addCupon = async () => {
-    const response = await axios.post(`${API_URL}/addCupon`, {
+    const payload = {
       loggedEmail,
       cupponName,
       cupponValue,
-    });
-    alert(response.data.message);
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/addCupon", JSON.stringify(payload));
+
+    
   };
 
   return (

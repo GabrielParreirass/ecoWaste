@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
-import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
 import PageTop from "../../../../components/PageTop";
 import Entypo from "@expo/vector-icons/Entypo";
 import DefaultButton from "../../../../components/DefaultButton";
@@ -7,33 +7,49 @@ import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import axios from "axios";
-import apiUrl from "../../../../utils/api_url.json";
 import { useAuth } from "../../../../contexts/AuthContext";
+import mqtt, { MqttClient } from "mqtt";
+import apiUrl from "../../../../utils/api_url.json";
 
 const EcoCoins = () => {
-  const API_URL = apiUrl.apiUrl;
   const [saldoEcoCoins, setSaldoEcoCoins] = useState("");
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
+  const client = useRef<MqttClient | null>(null);
+  
+  const requestId = useRef(Date.now().toString());
+  const API_URL = apiUrl.apiUrl;
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    client.current = mqtt.connect(API_URL);
 
-  const fetchData = async () => {
-    const response = await axios.post(`${API_URL}/fetchPaymentData`, {
-      email: loggedEmail,
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/fetchPaymentDataResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/fetchPaymentDataResponse/${requestId.current}`
+            );
+          }
+        }
+      );
     });
-    const filterPagamentos = response.data.transacoes.filter(
-      (i: any) => i.type == "Pagamento"
-    );
-    const filterRecebimentos = response.data.transacoes.filter(
-      (i: any) => i.type == "Recebimento"
-    );
-    
-    setSaldoEcoCoins(response.data.saldoEcoCoins);
-  };
+
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      setSaldoEcoCoins(formatedData.saldoEcoCoins);
+    });
+
+    const payload = {
+      email: loggedEmail,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/fetchPaymentData", JSON.stringify(payload));
+  }, []);
 
   return (
     <ScrollView>
@@ -53,7 +69,8 @@ const EcoCoins = () => {
         <Text style={styles.saldo}>Saldo atual (E$): {saldoEcoCoins},00</Text>
       </View>
       <View style={styles.containerBtns}>
-        <Pressable
+        <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() =>
             router.navigate(
               "/(private)/ecomorador/pages/ecocoins/transferirReceber/page"
@@ -69,8 +86,9 @@ const EcoCoins = () => {
             <FontAwesome6 name="money-bill-transfer" size={80} color="white" />
             <Text style={styles.textButton}>Transferir / Receber</Text>
           </LinearGradient>
-        </Pressable>
-        <Pressable
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() =>
             router.navigate(
               "/(private)/ecomorador/pages/ecocoins/boasCausas/page"
@@ -86,7 +104,7 @@ const EcoCoins = () => {
             <FontAwesome5 name="hand-holding-heart" size={80} color="white" />
             <Text style={styles.textButton}>Apoiar Boas Causas</Text>
           </LinearGradient>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={styles.containerDefaultButton}>
         <DefaultButton text={"sair"} onPressButton={() => router.back()} />

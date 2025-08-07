@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import PageTop from "../../../../../components/PageTop";
@@ -11,75 +11,81 @@ import DefaultButton from "../../../../../components/DefaultButton";
 
 const TransferirReceber = () => {
   return (
-    <ScrollView>
-      <PageTop profile={false} />
-      <View style={styles.containerIcon}>
-        <View style={styles.icon}>
-          <FontAwesome6 name="money-bill-transfer" size={60} color="green" />
+    
+    <SafeAreaView>
+      <ScrollView>
+        <PageTop profile={false} />
+        <View style={styles.containerIcon}>
+          <View style={styles.icon}>
+            <FontAwesome6 name="money-bill-transfer" size={60} color="green" />
+          </View>
         </View>
-      </View>
-      <View style={styles.containerTitle}>
-        <Text style={styles.title}>CÂMBIO: 1 ECO COIN = R$0,50</Text>
-      </View>
-      <View style={styles.containerBtns}>
-        <Pressable
-          onPress={() =>
-            router.navigate(
-              "/(private)/ecomorador/pages/ecocoins/transferirReceber/pagar/page"
-            )
-          }
-        >
-          <LinearGradient
-            colors={["#0097b2", "#7ed957"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.button}
+        <View style={styles.containerTitle}>
+          <Text style={styles.title}>CÂMBIO: 1 ECO COIN = R$0,50</Text>
+        </View>
+        <View style={styles.containerBtns}>
+          <TouchableOpacity
+          activeOpacity={0.7}
+            onPress={() =>
+              router.navigate(
+                "/(private)/ecomorador/pages/ecocoins/transferirReceber/pagar/page"
+              )
+            }
           >
-            <FontAwesome5 name="money-bill-alt" size={80} color="white" />
-            <Text style={styles.textButton}>PAGAR</Text>
-          </LinearGradient>
-        </Pressable>
-        <Pressable
-          onPress={() =>
-            router.navigate(
-              "/(private)/ecomorador/pages/ecocoins/transferirReceber/receber/page"
-            )
-          }
-        >
-          <LinearGradient
-            colors={["#0097b2", "#7ed957"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.button}
+            <LinearGradient
+              colors={["#0097b2", "#7ed957"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.button}
+            >
+              <FontAwesome5 name="money-bill-alt" size={80} color="white" />
+              <Text style={styles.textButton}>PAGAR</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+          activeOpacity={0.7}
+            onPress={() =>
+              router.navigate(
+                "/(private)/ecomorador/pages/ecocoins/transferirReceber/receber/page"
+              )
+            }
           >
-            <MaterialIcons name="payments" size={80} color="white" />
-            <Text style={styles.textButton}>RECEBER</Text>
-          </LinearGradient>
-        </Pressable>
-      </View>
-      <View style={styles.containerBtns}>
-        <Pressable
-          onPress={() =>
-            router.navigate(
-              "/(private)/ecomorador/pages/ecocoins/transferirReceber/extrato/page"
-            )
-          }
-        >
-          <LinearGradient
-            colors={["#0097b2", "#7ed957"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.button}
+            <LinearGradient
+              colors={["#0097b2", "#7ed957"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.button}
+            >
+              <MaterialIcons name="payments" size={80} color="white" />
+              <Text style={styles.textButton}>RECEBER</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.containerBtns}>
+          <TouchableOpacity
+          activeOpacity={0.7}
+            onPress={() =>
+              router.navigate(
+                "/(private)/ecomorador/pages/ecocoins/transferirReceber/extrato/page"
+              )
+            }
           >
-            <MaterialCommunityIcons name="bank" size={80} color="white" />
-            <Text style={styles.textButton}>EXTRATO</Text>
-          </LinearGradient>
-        </Pressable>
-      </View>
-      <View style={styles.containerDefaultButton}>
-        <DefaultButton text={"Sair"} onPressButton={() => router.back()} />
-      </View>
-    </ScrollView>
+            <LinearGradient
+              colors={["#0097b2", "#7ed957"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.button}
+            >
+              <MaterialCommunityIcons name="bank" size={80} color="white" />
+              <Text style={styles.textButton}>EXTRATO</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.containerDefaultButton}>
+          <DefaultButton text={"Sair"} onPressButton={() => router.back()} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -4,13 +4,12 @@ import PageTop from "../../../../../../components/PageTop";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import DefaultButton from "../../../../../../components/DefaultButton";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../../../contexts/AuthContext";
+import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../../utils/api_url.json";
-import axios from "axios";
 
-const Extrato = () => {
-  const API_URL = apiUrl.apiUrl;
+const Extrato = () => {;
   const [showSaldoEcoCoin, setShowSaldoEcoCoin] = useState(false);
   const [showPagamentos, setShowPagamentos] = useState(false);
   const [showRecebimentos, setShowRecebimentos] = useState(false);
@@ -18,31 +17,54 @@ const Extrato = () => {
   const [saldoEcoCoins, setSaldoEcoCoins] = useState("");
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
+  const API_URL = apiUrl.apiUrl;
 
   const [pagamentos, setPagamentos] = useState([]);
 
   const [recebimentos, setRecebimentos] = useState([]);
 
+  const client = useRef<MqttClient | null>(null);
+
+  const requestId = useRef(Date.now().toString());
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    client.current = mqtt.connect(API_URL);
 
-  const fetchData = async () => {
-    const response = await axios.post(`${API_URL}/fetchPaymentData`, {
-      email: loggedEmail,
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/fetchPaymentDataResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/fetchPaymentDataResponse/${requestId.current}`
+            );
+          }
+        }
+      );
     });
-    const filterPagamentos = response.data.transacoes.filter(
-      (i: any) => i.type == "Pagamento"
-    );
-    const filterRecebimentos = response.data.transacoes.filter(
-      (i: any) => i.type == "Recebimento"
-    );
 
-    console.log(filterRecebimentos)
-    setPagamentos(filterPagamentos);
-    setRecebimentos(filterRecebimentos);
-    setSaldoEcoCoins(response.data.saldoEcoCoins)
-  };
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      const filterPagamentos = formatedData.transacoes.filter(
+        (i: any) => i.type == "Pagamento"
+      );
+      const filterRecebimentos = formatedData.transacoes.filter(
+        (i: any) => i.type == "Recebimento"
+      );
+      setPagamentos(filterPagamentos);
+      setRecebimentos(filterRecebimentos);
+      setSaldoEcoCoins(formatedData.saldoEcoCoins);
+    });
+
+    const payload = {
+      email: loggedEmail,
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/fetchPaymentData", JSON.stringify(payload));
+  }, []);
 
   return (
     <ScrollView>
@@ -156,7 +178,6 @@ const Extrato = () => {
                 <View key={index} style={styles.containerInfos}>
                   <Text style={styles.textInfos}>Pagador: {i.partner}</Text>
                   <Text style={styles.textInfos}>Valor: E${i.value},00</Text>
-                  
                 </View>
               ))}
             </View>

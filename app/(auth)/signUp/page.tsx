@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { Component } from "react";
 import PageTop from "../../components/PageTop";
 import { Image } from "react-native";
-import { Pressable } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 
 export class SingUp extends Component {
@@ -28,9 +28,9 @@ export class SingUp extends Component {
                 }}
               >
                 <View style={styles.connectorLine}></View>
-                <Pressable onPress={() => router.navigate("/(auth)/signUp/ecomorador/page")}>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => router.navigate("/(auth)/signUp/ecomorador/page")}>
                   <Text style={styles.titleEcomorador}>ECOMORADOR</Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -51,7 +51,9 @@ export class SingUp extends Component {
                   flexDirection: "row",
                 }}
               >
-                <Text style={styles.titleEcotaxista}>ECOTAXISTA</Text>
+                <TouchableOpacity activeOpacity={0.7} onPress={()=> router.navigate("/(auth)/signUp/ecotaxista/page")}>
+                  <Text style={styles.titleEcotaxista}>ECOTAXISTA</Text>
+                </TouchableOpacity>
                 <View style={styles.connectorLineEcotaxista}></View>
               </View>
             </View>

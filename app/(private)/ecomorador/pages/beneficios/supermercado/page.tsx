@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import PageTop from "../../../../../components/PageTop";
 import Foundation from "@expo/vector-icons/Foundation";
@@ -24,7 +24,8 @@ const DescontoSupermercado = () => {
         </Text>
       </View>
       <View style={styles.containerBtns}>
-        <Pressable
+        <TouchableOpacity
+        activeOpacity={0.7}
           onPress={() =>
             router.navigate(
               "/(private)/ecomorador/pages/beneficios/supermercado/cuponsDisponiveis/page"
@@ -40,8 +41,9 @@ const DescontoSupermercado = () => {
             <MaterialIcons name="discount" size={80} color="white" />
             <Text style={styles.textButton}>Cupons</Text>
           </LinearGradient>
-        </Pressable>
-        <Pressable
+        </TouchableOpacity>
+        <TouchableOpacity
+        activeOpacity={0.7}
           onPress={() =>
             router.navigate(
               "/(private)/ecomorador/pages/beneficios/supermercado/meusCupons/page"
@@ -57,7 +59,7 @@ const DescontoSupermercado = () => {
             <FontAwesome name="shopping-bag" size={80} color="white" />
             <Text style={styles.textButton}>Meus cupons</Text>
           </LinearGradient>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={{ width: "70%", margin: "auto" }}>
         <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />

@@ -4,28 +4,56 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import PageTop from "../../../../../components/PageTop";
 import DefaultButton from "../../../../../components/DefaultButton";
 import CustomModal from "../../../../../components/popUps/CustomModal";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { router } from "expo-router";
-import axios from "axios";
-import apiUrl from "../../../../../utils/api_url.json";
 import { useAuth } from "../../../../../contexts/AuthContext";
+import mqtt, { MqttClient } from "mqtt";
+import apiUrl from "../../../../../utils/api_url.json";
 
 const BoasCausas = () => {
   const [modalMsgAgradecimentoVisible, setModalMsgAgradecimentoVisible] =
-    useState(false);
-  const API_URL = apiUrl.apiUrl;
+  useState(false);
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
   const [valorPagamento, setValorPagamento] = useState("");
+  const client = useRef<MqttClient | null>(null);
+  const requestId = useRef(Date.now().toString());
+  const API_URL = apiUrl.apiUrl;
+  
+  useEffect(() => {
+    client.current = mqtt.connect(API_URL);
 
-  const handlePagamento = async () => {
-    const response = await axios.post(`${API_URL}/payments`, {
-      loggedEmail,
-      emailDestinatario: "asildodesantarita@gmail.com",
-      valorPagamento,
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      client.current?.subscribe(
+        `user/paymentResponse/${requestId.current}`,
+        (err) => {
+          if (!err) {
+            console.log(
+              `📡 Inscrito no tópico user/paymentResponse/${requestId.current}`
+            );
+          }
+        }
+      );
     });
 
-    window.alert(response.data.message);
+    client.current.on("message", (topic, message) => {
+      console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
+      const formatedData = JSON.parse(message.toString());
+      window.alert(formatedData.message);
+    });
+  }, []);
+
+  const handlePagamento = async () => {
+
+     const payload = {
+      loggedEmail,
+      emailDestinatario: "asildodesantarita@gmail.com",
+      valorPagamento: parseFloat(valorPagamento),
+      requestId: requestId.current,
+    };
+    client.current?.publish("user/payment", JSON.stringify(payload));
 
     setValorPagamento("");
   };

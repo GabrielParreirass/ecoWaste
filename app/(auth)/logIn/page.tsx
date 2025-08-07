@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
 import React, { Component } from "react";
 import PageTop from "../../components/PageTop";
 import { Image } from "react-native";
@@ -8,56 +8,74 @@ import { router } from "expo-router";
 export class SingUp extends Component {
   render() {
     return (
-      <View>
-        <PageTop />
-        <Text style={styles.pageTitle}>Olá, você quer:</Text>
-        <View>
-          <View style={styles.containerEcomorador}>
-            <Image
-              source={require("../../../assets/images/imgCadastroEcomorador.png")}
-              style={styles.imgEcomorador}
-            />
-            <View style={{ display: "flex", justifyContent: "space-between" }}>
-              <Text style={styles.descEcomorador}>Reciclar meus resíduos</Text>
-              <View
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <View style={styles.connectorLine}></View>
-                <Pressable onPress={() => router.navigate("/(auth)/logIn/ecomorador/page")}>
-                  <Text style={styles.titleEcomorador}>ECOMORADOR</Text>
-                </Pressable>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <PageTop />
+          <Text style={styles.pageTitle}>Olá, você quer:</Text>
+          <View>
+            <View style={styles.containerEcomorador}>
+              <Image
+                source={require("../../../assets/images/imgCadastroEcomorador.png")}
+                style={styles.imgEcomorador}
+              />
+              <View style={{ display: "flex", justifyContent: "space-between" }}>
+                <Text style={styles.descEcomorador}>Reciclar meus resíduos</Text>
+                <View
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <View style={styles.connectorLine}></View>
+                  <Pressable
+                    style={({ pressed }) => [
+                      pressed && styles.buttonPressed
+                    ]}
+                    onPress={() =>
+                      router.navigate("/(auth)/logIn/ecomorador/page")
+                    }
+                  >
+                    <Text style={styles.titleEcomorador}>ECOMORADOR</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+            <View style={styles.containerEcotaxista}>
+              <Image
+                source={require("../../../assets/images/imgCadastroEcotaxista.png")}
+                style={styles.imgEcomorador}
+              />
+              <View style={{ display: "flex", justifyContent: "space-between" }}>
+                <Text style={styles.descEcotaxista}>
+                  Coletar resíduos recicláveis
+                </Text>
+                <View
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <Pressable
+                    style={({ pressed }) => [
+                      pressed && styles.buttonPressed
+                    ]}
+                    onPress={() =>
+                      router.navigate("/(auth)/logIn/ecotaxista/page")
+                    }
+                  >
+                    <Text style={styles.titleEcotaxista}>ECOTAXISTA</Text>
+                  </Pressable>
+                  <View style={styles.connectorLineEcotaxista}></View>
+                </View>
               </View>
             </View>
           </View>
-          <View style={styles.containerEcotaxista}>
-            <Image
-              source={require("../../../assets/images/imgCadastroEcotaxista.png")}
-              style={styles.imgEcomorador}
-            />
-            <View style={{ display: "flex", justifyContent: "space-between" }}>
-              <Text style={styles.descEcotaxista}>
-                Coletar resíduos recicláveis
-              </Text>
-              <View
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <Text style={styles.titleEcotaxista}>ECOTAXISTA</Text>
-                <View style={styles.connectorLineEcotaxista}></View>
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -65,6 +83,18 @@ export class SingUp extends Component {
 export default SingUp;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  buttonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }],
+  },
   containerEcomorador: {
     display: "flex",
     flexDirection: "row",
