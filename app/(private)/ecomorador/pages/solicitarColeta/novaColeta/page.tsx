@@ -7,12 +7,12 @@ import Etapa2 from "./etapas/etapa2";
 import Etapa3 from "./etapas/etapa3";
 import Etapa4 from "./etapas/etapa4";
 import Etapa5 from "./etapas/etapa5";
-import { useAuth } from "../../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../utils/api_url.json";
 import * as Location from "expo-location";
 import { LocationObjectCoords } from "expo-location";
-
+import { createMqttOptions } from "../../../../../utils/mqttOptions";
 
 const NovaColeta = () => {
   const [progression, setProgression] = useState("1");
@@ -31,11 +31,12 @@ const NovaColeta = () => {
 
   const client = useRef<MqttClient | null>(null);
 
- const requestId = useRef(Date.now().toString());
+  const requestId = useRef(Date.now().toString());
 
+  const options = createMqttOptions();
 
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");
@@ -45,29 +46,29 @@ const NovaColeta = () => {
         (err) => {
           if (!err) {
             console.log(
-              `📡 Inscrito no tópico user/agendarColetaResponse/${requestId.current}`
+              `📡 Inscrito no tópico user/agendarColetaResponse/${requestId.current}`,
             );
           }
-        }
+        },
       );
     });
 
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
-      const formatedMessage = JSON.parse(message.toString())
-      alert(formatedMessage.message)
+      const formatedMessage = JSON.parse(message.toString());
+      alert(formatedMessage.message);
     });
 
     (async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("Permissão de localização negada");
-      return;
-    }
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permissão de localização negada");
+        return;
+      }
 
-    const currentLocation = await Location.getCurrentPositionAsync({});
-    setLocation(currentLocation.coords);
-  })();
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation.coords);
+    })();
 
     return () => {
       client.current?.end();
@@ -83,15 +84,13 @@ const NovaColeta = () => {
       horario,
       requestId: requestId.current,
       latitude: location?.latitude.toString(),
-      longitude: location?.longitude.toString()
+      longitude: location?.longitude.toString(),
     };
 
-    console.log('RequestId 2: ', requestId.current)
+    console.log("RequestId 2: ", requestId.current);
     client.current?.publish("user/agendarColeta", JSON.stringify(payload));
 
-
-    console.log("Mandou a coleta")
-
+    console.log("Mandou a coleta");
   };
 
   return (

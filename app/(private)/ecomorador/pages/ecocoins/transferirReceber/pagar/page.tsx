@@ -9,10 +9,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import CustomModal from "../../../../../../components/popUps/CustomModal";
 import { useState, useEffect, useRef } from "react";
 import { router } from "expo-router";
-import { useAuth } from "../../../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../../../contexts/AuthContext";
 import QRCodeScanner from "../../../../../../components/QrCodeReader";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../../utils/api_url.json";
+import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const Pagar = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,8 +28,10 @@ const Pagar = () => {
   const requestId = useRef(Date.now().toString());
   const API_URL = apiUrl.apiUrl;
 
+  const options = createMqttOptions();
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");

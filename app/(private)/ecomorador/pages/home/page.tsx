@@ -1,12 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import PageTop from "../../../../components/PageTop";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../utils/api_url.json";
+import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const HomeEcomorador = () => {
   const { onLogout, authState } = useAuth();
@@ -19,11 +20,7 @@ const HomeEcomorador = () => {
   const requestId = useRef(Date.now().toString());
   const API_URL = apiUrl.apiUrl;
 
-  const options = {
-        clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
-        username: "csilab", 
-        password: "WhoAmI#2024", 
-      };
+  const options = createMqttOptions();
 
   useEffect(() => {
     client.current = mqtt.connect(API_URL, options);

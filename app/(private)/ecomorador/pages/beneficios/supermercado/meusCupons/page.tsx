@@ -5,10 +5,11 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import DefaultButton from "../../../../../../components/DefaultButton";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../../../contexts/AuthContext";
 import apiUrl from "../../../../../../utils/api_url.json";
 import QRCode from "react-native-qrcode-svg";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const MeusCupons = () => {
   const [showQrCode, setShowQrCode] = useState(false);
@@ -22,8 +23,10 @@ const MeusCupons = () => {
 
   const requestId = useRef(Date.now().toString());
 
+  const options = createMqttOptions();
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");
@@ -44,7 +47,7 @@ const MeusCupons = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedData = JSON.parse(message.toString());
-      setCupons(formatedData.user.cupons)
+      setCupons(formatedData.user.cupons || []);
     });
 
     const payload = {
@@ -54,13 +57,6 @@ const MeusCupons = () => {
     client.current?.publish("user/getUserData", JSON.stringify(payload));
   }, []);
 
-  // const fetchData = async () => {
-  //   const response = await axios.post(`${API_URL}/getUserData`, {
-  //     loggedEmail,
-  //   });
-
-  //   setCupons(response.data.cupons);
-  // };
 
   return (
     <ScrollView>
@@ -98,7 +94,8 @@ const MeusCupons = () => {
             </Text>
           </View>
           <View style={styles.containerKeys}>
-            {cupons.map((i: any) => (
+
+            {cupons.length == 0 ? (<View> <Text>Você não possui nenhum cupom.</Text> </View>) : (<View>{cupons.map((i: any) => (
               <Pressable
                 style={styles.key}
                 onPress={() => {
@@ -114,7 +111,9 @@ const MeusCupons = () => {
                   </Text>
                 </View>
               </Pressable>
-            ))}
+            ))}</View>)}
+            
+            
           </View>
           <View style={{ width: "70%", margin: "auto" }}>
             <DefaultButton

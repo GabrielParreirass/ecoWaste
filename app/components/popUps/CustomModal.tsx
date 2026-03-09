@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import CustomModalProps from "../../types/CustomModalProps";
+import CustomModalProps from "../../../types/CustomModalProps";
 
 const CustomModal = ({
   visible,

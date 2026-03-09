@@ -8,9 +8,10 @@ import DefaultButton from "../../../../components/DefaultButton";
 import { router } from "expo-router";
 import CustomModal from "../../../../components/popUps/CustomModal";
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../utils/api_url.json";
+import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const Manutencao = () => {
   const [modalVisible, setmodalVisible] = useState(false);
@@ -20,8 +21,10 @@ const Manutencao = () => {
   const requestId = useRef(Date.now().toString());
   const API_URL = apiUrl.apiUrl;
 
+  const options = createMqttOptions();
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");

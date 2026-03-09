@@ -11,11 +11,12 @@ import PageTop from "../../../../components/PageTop";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DefaultButton from "../../../../components/DefaultButton";
 import { router } from "expo-router";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../utils/api_url.json";
 import CustomModal from "../../../../components/popUps/CustomModal";
 import QRCodeScanner from "../../../../components/QrCodeReader";
+import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const Reservas = () => {
   const API_URL = apiUrl.apiUrl;
@@ -34,11 +35,7 @@ const Reservas = () => {
   const [lixeiraVazia, setLixeiraVazia] = useState(false);
   const [trancada, setTrancada] = useState(true)
 
-  const options = {
-    clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
-    username: "csilab",
-    password: "WhoAmI#2024",
-  };
+  const options = createMqttOptions();
 
   useEffect(() => {
     client.current = mqtt.connect(API_URL, options);

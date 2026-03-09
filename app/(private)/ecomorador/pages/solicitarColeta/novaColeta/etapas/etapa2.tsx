@@ -1,7 +1,7 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import React, { useState } from "react";
 import DefaultButton from "../../../../../../components/DefaultButton";
-import EtapasProps from "../../../../../../types/EtapasProps";
+import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa2 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {

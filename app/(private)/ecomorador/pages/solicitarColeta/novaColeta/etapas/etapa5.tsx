@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import DefaultButton from "../../../../../../components/DefaultButton";
-import EtapasProps from "../../../../../../types/EtapasProps";
+import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa5 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {

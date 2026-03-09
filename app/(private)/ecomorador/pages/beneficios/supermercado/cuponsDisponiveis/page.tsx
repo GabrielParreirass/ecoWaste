@@ -6,9 +6,10 @@ import { router } from "expo-router";
 import { useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CustomModal from "../../../../../../components/popUps/CustomModal";
-import { useAuth } from "../../../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../../utils/api_url.json";
+import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const CuponsDisponiveis = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,8 +26,10 @@ const CuponsDisponiveis = () => {
   const requestId = useRef(Date.now().toString());
   const API_URL = apiUrl.apiUrl;
 
+  const options = createMqttOptions();
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");

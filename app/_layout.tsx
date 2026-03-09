@@ -1,5 +1,5 @@
 import { router, Stack } from "expo-router";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
 import { useSegments, usePathname } from "expo-router";
 

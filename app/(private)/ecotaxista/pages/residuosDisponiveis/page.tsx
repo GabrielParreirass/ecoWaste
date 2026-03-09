@@ -15,10 +15,11 @@ import CardNovaColeta from "../../../../components/CardNovaColeta";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { LocationObjectCoords } from "expo-location";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../utils/api_url.json";
 import CustomModal from "../../../../components/popUps/CustomModal";
+import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const ResiduosDisponiveis = () => {
   const [materialSelecionado, setMaterialSelecionado] = useState("");
@@ -45,14 +46,10 @@ const ResiduosDisponiveis = () => {
       ? coletas.coletas
       : coletas.coletas.filter(
           (c: any) =>
-            c.type === materialSelecionado && c.status === "disponivel"
+            c.type === materialSelecionado && c.status === "disponivel",
         );
 
-  const options = {
-    clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
-    username: "csilab",
-    password: "WhoAmI#2024",
-  };
+  const options = createMqttOptions();
 
   useEffect(() => {
     client.current = mqtt.connect(API_URL, options);
@@ -65,10 +62,10 @@ const ResiduosDisponiveis = () => {
         (err) => {
           if (!err) {
             console.log(
-              `📡 Inscrito no tópico user/getAllColetasResponse/${requestId.current}`
+              `📡 Inscrito no tópico user/getAllColetasResponse/${requestId.current}`,
             );
           }
-        }
+        },
       );
 
       client.current?.subscribe(
@@ -76,10 +73,10 @@ const ResiduosDisponiveis = () => {
         (err) => {
           if (!err) {
             console.log(
-              `📡 Inscrito no tópico user/reservarColetaResponse/${requestId.current}`
+              `📡 Inscrito no tópico user/reservarColetaResponse/${requestId.current}`,
             );
           }
-        }
+        },
       );
 
       client.current?.subscribe("EcoWaste/tranca", (err) => {
@@ -264,7 +261,8 @@ const ResiduosDisponiveis = () => {
                       title={i.type}
                       key={index}
                       onPress={() => (
-                        setSelectedColeta(i), setModalVisible(true)
+                        setSelectedColeta(i),
+                        setModalVisible(true)
                       )}
                     />
                   ))}
@@ -327,7 +325,8 @@ const ResiduosDisponiveis = () => {
                       },
                     ]}
                     onPress={() => (
-                      setSelectedColeta(i), setModalVisible(true)
+                      setSelectedColeta(i),
+                      setModalVisible(true)
                     )}
                   >
                     <Text style={styles.textKeys}>
@@ -365,12 +364,12 @@ const ResiduosDisponiveis = () => {
             <CardNovaColeta
               text="Plástico"
               background="red"
-              onPressCard={() => setMaterialSelecionado("Plástico")}
+              onPressCard={() => setMaterialSelecionado("Plastico")}
             />
             <CardNovaColeta
               text="Orgânicos"
               background="brown"
-              onPressCard={() => setMaterialSelecionado("Orgânicos")}
+              onPressCard={() => setMaterialSelecionado("Organicos")}
             />
           </View>
           <View style={styles.subContainerCards}>

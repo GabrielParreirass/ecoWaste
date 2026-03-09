@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import apiUrl from "../utils/api_url.json";
+import apiUrl from "../app/utils/api_url.json";
 import { router } from "expo-router";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../app/utils/mqttOptions";
 
 interface AuthProps {
   authState?: {
