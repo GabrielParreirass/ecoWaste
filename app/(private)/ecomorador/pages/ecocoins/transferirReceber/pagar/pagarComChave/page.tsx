@@ -67,7 +67,7 @@ const PagarComChave = () => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       if (topic == `user/getPaymentKeysResponse/${requestId.current}`) {
         const formatedData = JSON.parse(message.toString());
-        setPaymentKeys(formatedData.paymentKeys);
+        setPaymentKeys(formatedData.paymentKeys ?? []);
       }
       if (topic == `user/paymentWithKeyResponse/${requestId.current}`) {
         const formatedData = JSON.parse(message.toString());

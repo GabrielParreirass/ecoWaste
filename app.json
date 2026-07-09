@@ -13,14 +13,20 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gepeto031.ecoWaste"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.gepeto031.ecoWaste"
+      "package": "com.gepeto031.ecoWaste",
+      "config": {
+        // "googleMaps": {
+        //   "apiKey": "SUA_CHAVE_GOOGLE_MAPS_AQUI"
+        // }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -30,8 +36,25 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-web-browser"
-      
+      "expo-web-browser",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "O ecoWaste usa a câmera para escanear QR codes de coleta."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "O ecoWaste usa sua localização para encontrar pontos de coleta próximos."
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "Permitir uso do Face ID para acessar dados salvos com segurança."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

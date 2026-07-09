@@ -8,4 +8,6 @@ export default interface CustomModalProps {
     onConfirm?: () => void;
     confirmButtonText?: string;
     closeButtonText?: string;
+    stackedButtons?: boolean;
+    onMapPress?: () => void;
   }

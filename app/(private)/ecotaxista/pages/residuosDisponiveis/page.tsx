@@ -100,7 +100,8 @@ const ResiduosDisponiveis = () => {
         setColetas(formatedColetas);
       }
       if (topic == `user/reservarColetaResponse/${requestId.current}`) {
-        window.alert(message);
+         const formatedData = JSON.parse(message.toString());
+        window.alert(formatedData.message);
 
         const payload = {
           email: userEmail,
@@ -174,13 +175,13 @@ const ResiduosDisponiveis = () => {
                   <FontAwesome5 name="map-marked-alt" size={60} color="white" />
                   <Text style={styles.textCard}>Ver no mapa</Text>
                 </Pressable>
-                <Pressable
+                {/* <Pressable
                   style={styles.card2}
                   onPress={() => (setShowList(true), setShowHome(false))}
                 >
                   <FontAwesome5 name="calendar-check" size={60} color="white" />
                   <Text style={styles.textCard}>Reservar</Text>
-                </Pressable>
+                </Pressable> */}
               </View>
               <View style={{ width: "70%", margin: "auto" }}>
                 <DefaultButton
@@ -189,7 +190,7 @@ const ResiduosDisponiveis = () => {
                 />
               </View>
 
-              <View>
+              {/* <View>
                 <View style={{ padding: 20, alignItems: "center" }}>
                   <Text
                     style={{
@@ -204,10 +205,10 @@ const ResiduosDisponiveis = () => {
                   <Text>Ultrassom: {ultrassom}</Text>
                   <Text>Ajuda: {ajuda}</Text>
                 </View>
-              </View>
+              </View> */}
             </View>
           ) : (
-            <View> </View>
+            <View></View>
           )}
 
           {showMap ? (
@@ -369,7 +370,7 @@ const ResiduosDisponiveis = () => {
             <CardNovaColeta
               text="Orgânicos"
               background="brown"
-              onPressCard={() => setMaterialSelecionado("Organicos")}
+              onPressCard={() => setMaterialSelecionado("Organico")}
             />
           </View>
           <View style={styles.subContainerCards}>

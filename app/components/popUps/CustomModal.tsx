@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomModalProps from "../../../types/CustomModalProps";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const CustomModal = ({
   visible,
@@ -20,6 +21,8 @@ const CustomModal = ({
   setInputValue,
   confirmButtonText,
   closeButtonText,
+  stackedButtons, 
+  onMapPress,
 }: CustomModalProps) => {
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
@@ -38,6 +41,17 @@ const CustomModal = ({
             ))}
           </View>
 
+          {onMapPress && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onMapPress}
+              style={styles.mapButton}
+            >
+              <FontAwesome5 name="map-marked-alt" size={20} color="#fff" />
+              <Text style={styles.textMapButton}>Abrir no Google Maps</Text>
+            </TouchableOpacity>
+          )}
+
           {showInput && (
             <TextInput
               style={styles.input}
@@ -47,11 +61,17 @@ const CustomModal = ({
             />
           )}
 
-          <View style={styles.buttonContainer}>
+       
+          <View 
+            style={[
+              styles.buttonContainer, 
+              stackedButtons && styles.buttonContainerStacked
+            ]}
+          >
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={onClose}
-              style={styles.button}
+              style={[styles.button, stackedButtons && styles.stackedButton]} 
             >
               {closeButtonText ? (
                 <Text style={styles.textButton}>{closeButtonText}</Text>
@@ -59,11 +79,12 @@ const CustomModal = ({
                 <Text style={styles.textButton}>Fechar</Text>
               )}
             </TouchableOpacity>
+            
             {onConfirm && (
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={onConfirm}
-                style={styles.button}
+                style={[styles.button, stackedButtons && styles.stackedButton]} 
               >
                 {confirmButtonText ? (
                   <Text style={styles.textButton}>{confirmButtonText}</Text>
@@ -115,6 +136,16 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
   },
+ 
+  buttonContainerStacked: {
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 15, 
+  },
+  stackedButton: {
+    width: "100%", 
+  },
+  
   button: {
     backgroundColor: "#fff",
     alignItems: "center",
@@ -127,6 +158,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textTransform: "uppercase",
     fontSize: 16,
+    textAlign: "center",
+  },
+  mapButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: "#006b80", 
+    padding: 12,
+    borderRadius: 10,
+    width: "95%",
+    marginVertical: 10,
+  },
+  textMapButton: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
 

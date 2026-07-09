@@ -59,7 +59,7 @@ const EcotaxistaSignUp = () => {
       const formatedData = JSON.parse(message.toString());
       if (topic == `user/verificateOtpResponse/${requestId.current}`) {
         if (formatedData.otpVerified) {
-          alert(formatedData.message);
+          alert(formatedData.message + " Redirecionando para a página de login.");
           setModalVisible(false);
           router.navigate("/(auth)/logIn/ecotaxista/page");
         } else {
