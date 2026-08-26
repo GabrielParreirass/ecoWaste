@@ -76,27 +76,57 @@ const NovaColeta = () => {
   }, []);
 
   const handleSendColeta = async () => {
+    try {
+      console.log("📍 Buscando localização atualizada...");
+      
+      // 1. Confere se a permissão foi concedida
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("Precisamos da permissão de localização para agendar a coleta!");
+        return; // Interrompe o envio se não tiver permissão
+      }
 
-    console.log("Latitude: ", location?.latitude);
-    console.log("Longitude: ", location?.longitude);
+      // 2. Busca a localização no momento exato do clique
+      // Adicionamos um accuracy menor para ser mais rápido (opcional)
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced, // Evita demorar demais tentando a precisão máxima
+      });
 
-    const payload = {
-      email: loggedEmail,
-      tipo,
-      peso,
-      diaSem,
-      horario,
-      requestId: requestId.current,
-      latitude: location?.latitude.toString(),
-      longitude: location?.longitude.toString(),
-    };
+      console.log("✅ Localização encontrada!");
+      console.log("Latitude: ", currentLocation.coords.latitude);
+      console.log("Longitude: ", currentLocation.coords.longitude);
 
-    console.log("RequestId 2: ", requestId.current);
-    client.current?.publish("user/agendarColeta", JSON.stringify(payload));
+      // Atualiza o estado (opcional, caso precise usar na tela)
+      setLocation(currentLocation.coords);
 
-    console.log("Mandou a coleta");
+      // 3. Monta o payload usando as coordenadas frescas que acabaram de chegar
+      const payload = {
+        email: loggedEmail,
+        tipo,
+        peso,
+        diaSem,
+        horario,
+        requestId: requestId.current,
+        // Atenção: Use currentLocation.coords em vez do estado 'location' 
+        // para garantir que não haja delay do React
+        latitude: currentLocation.coords.latitude.toString(),
+        longitude: currentLocation.coords.longitude.toString(),
+      };
+
+      console.log("RequestId: ", requestId.current);
+      
+      // 4. Publica no MQTT
+      client.current?.publish("user/agendarColeta", JSON.stringify(payload));
+      console.log("📤 Mandou a coleta");
+
+      // 5. Reseta a progressão
+      setProgression("1");
+
+    } catch (error) {
+      console.error("Erro ao pegar localização ou enviar coleta:", error);
+      alert("Erro ao tentar agendar. Verifique seu GPS e tente novamente.");
+    }
   };
-
   return (
     <ScrollView>
       <PageTop />

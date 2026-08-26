@@ -12,7 +12,6 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DefaultButton from "../../../../components/DefaultButton";
 import { router } from "expo-router";
 import CardNovaColeta from "../../../../components/CardNovaColeta";
-import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { LocationObjectCoords } from "expo-location";
 import { useAuth } from "../../../../../contexts/AuthContext";
@@ -20,6 +19,62 @@ import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../utils/api_url.json";
 import CustomModal from "../../../../components/popUps/CustomModal";
 import { createMqttOptions } from "../../../../utils/mqttOptions";
+import { WebView } from "react-native-webview";
+
+// Função responsável por gerar o mapa usando Leaflet e OpenStreetMap
+const gerarMapaHTML = (latitude: number, longitude: number, coletas: any[]) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <style>
+        body { padding: 0; margin: 0; }
+        #map { width: 100%; height: 100vh; }
+        .custom-div-icon {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>
+      <script>
+        var map = L.map('map', {
+          zoomControl: false // Oculta os botões de + e - para um visual mais limpo (opcional)
+        }).setView([${latitude}, ${longitude}], 14);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const coletas = ${JSON.stringify(coletas)};
+        
+        coletas.forEach(function(coleta) {
+          var color = coleta.horario == "--" ? "green" : "orange";
+          
+          var customIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:" + color + "; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);'></div>",
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+          });
+
+          var marker = L.marker([parseFloat(coleta.latitude), parseFloat(coleta.longitude)], {icon: customIcon}).addTo(map);
+          
+          marker.on('click', function() {
+            window.ReactNativeWebView.postMessage(JSON.stringify(coleta));
+          });
+        });
+      </script>
+    </body>
+    </html>
+  `;
+};
 
 const ResiduosDisponiveis = () => {
   const [materialSelecionado, setMaterialSelecionado] = useState("");
@@ -100,7 +155,7 @@ const ResiduosDisponiveis = () => {
         setColetas(formatedColetas);
       }
       if (topic == `user/reservarColetaResponse/${requestId.current}`) {
-         const formatedData = JSON.parse(message.toString());
+        const formatedData = JSON.parse(message.toString());
         window.alert(formatedData.message);
 
         const payload = {
@@ -170,18 +225,14 @@ const ResiduosDisponiveis = () => {
               <View style={styles.containerCards}>
                 <Pressable
                   style={styles.card2}
-                  onPress={() => (setShowMap(true), setShowHome(false))}
+                  onPress={() => {
+                    setShowMap(true);
+                    setShowHome(false);
+                  }}
                 >
                   <FontAwesome5 name="map-marked-alt" size={60} color="white" />
                   <Text style={styles.textCard}>Ver no mapa</Text>
                 </Pressable>
-                {/* <Pressable
-                  style={styles.card2}
-                  onPress={() => (setShowList(true), setShowHome(false))}
-                >
-                  <FontAwesome5 name="calendar-check" size={60} color="white" />
-                  <Text style={styles.textCard}>Reservar</Text>
-                </Pressable> */}
               </View>
               <View style={{ width: "70%", margin: "auto" }}>
                 <DefaultButton
@@ -189,27 +240,8 @@ const ResiduosDisponiveis = () => {
                   onPressButton={() => router.back()}
                 />
               </View>
-
-              {/* <View>
-                <View style={{ padding: 20, alignItems: "center" }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "bold",
-                      marginBottom: 5,
-                    }}
-                  >
-                    Status em tempo real:
-                  </Text>
-                  <Text>Tranca: {tranca}</Text>
-                  <Text>Ultrassom: {ultrassom}</Text>
-                  <Text>Ajuda: {ajuda}</Text>
-                </View>
-              </View> */}
             </View>
-          ) : (
-            <View></View>
-          )}
+          ) : null}
 
           {showMap ? (
             <View style={styles.mapContainer}>
@@ -234,52 +266,43 @@ const ResiduosDisponiveis = () => {
                   Nenhuma coleta disponível para o material selecionado.
                 </Text>
               ) : (
-                <MapView
-                  style={styles.map}
-                  initialRegion={
-                    location
-                      ? {
-                          latitude: location.latitude,
-                          longitude: location.longitude,
-                          latitudeDelta: 0.01,
-                          longitudeDelta: 0.01,
-                        }
-                      : {
-                          latitude: -22.256755, // fallback enquanto carrega
-                          longitude: -45.696073,
-                          latitudeDelta: 0.01,
-                          longitudeDelta: 0.01,
-                        }
-                  }
-                >
-                  {coletasFiltradas.map((i: any, index) => (
-                    <Marker
-                      coordinate={{
-                        latitude: parseFloat(i.latitude),
-                        longitude: parseFloat(i.longitude),
-                      }}
-                      pinColor={i.horario == "--" ? "green" : "orange"}
-                      title={i.type}
-                      key={index}
-                      onPress={() => (
-                        setSelectedColeta(i),
-                        setModalVisible(true)
-                      )}
-                    />
-                  ))}
-                </MapView>
+                <View style={styles.map}>
+                  <WebView
+                    originWhitelist={["*"]}
+                    source={{
+                      html: gerarMapaHTML(
+                        location ? location.latitude : -22.256755,
+                        location ? location.longitude : -45.696073,
+                        coletasFiltradas
+                      ),
+                    }}
+                    style={{ flex: 1 }}
+                    onMessage={(event) => {
+                      try {
+                        const coletaClicada = JSON.parse(
+                          event.nativeEvent.data
+                        );
+                        setSelectedColeta(coletaClicada);
+                        setModalVisible(true);
+                      } catch (error) {
+                        console.log("Erro ao processar clique no mapa", error);
+                      }
+                    }}
+                  />
+                </View>
               )}
 
               <View style={styles.mapButtonContainer}>
                 <DefaultButton
                   text="Voltar"
-                  onPressButton={() => (setShowMap(false), setShowHome(true))}
+                  onPressButton={() => {
+                    setShowMap(false);
+                    setShowHome(true);
+                  }}
                 />
               </View>
             </View>
-          ) : (
-            <View></View>
-          )}
+          ) : null}
 
           {showList ? (
             <View>
@@ -325,10 +348,10 @@ const ResiduosDisponiveis = () => {
                         backgroundColor: i.horario == "--" ? "green" : "orange",
                       },
                     ]}
-                    onPress={() => (
-                      setSelectedColeta(i),
-                      setModalVisible(true)
-                    )}
+                    onPress={() => {
+                      setSelectedColeta(i);
+                      setModalVisible(true);
+                    }}
                   >
                     <Text style={styles.textKeys}>
                       {i.type}: {i.peso}
@@ -339,13 +362,14 @@ const ResiduosDisponiveis = () => {
               <View style={{ width: "70%", margin: "auto", paddingTop: 10 }}>
                 <DefaultButton
                   text={"Voltar"}
-                  onPressButton={() => (setShowList(false), setShowHome(true))}
+                  onPressButton={() => {
+                    setShowList(false);
+                    setShowHome(true);
+                  }}
                 />
               </View>
             </View>
-          ) : (
-            <View></View>
-          )}
+          ) : null}
         </View>
       ) : (
         <View style={styles.mainContainerCards}>
@@ -415,7 +439,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     backgroundColor: "white",
-    borderRadius: "50%",
+    borderRadius: 50,
     width: 100,
     height: 100,
     display: "flex",
@@ -537,7 +561,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-
     margin: "auto",
   },
   input: {
