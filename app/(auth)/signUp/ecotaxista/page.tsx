@@ -15,8 +15,9 @@ import { router } from "expo-router";
 import CustomModal from "../../../components/popUps/CustomModal";
 import axios from "axios";
 import apiUrl from "../../../utils/api_url.json";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../../../utils/mqttOptions";
 
 const EcotaxistaSignUp = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,8 +34,10 @@ const EcotaxistaSignUp = () => {
   const client = useRef<MqttClient | null>(null);
   const requestId = useRef(Date.now().toString());
 
+  const options = createMqttOptions();
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");
@@ -56,7 +59,7 @@ const EcotaxistaSignUp = () => {
       const formatedData = JSON.parse(message.toString());
       if (topic == `user/verificateOtpResponse/${requestId.current}`) {
         if (formatedData.otpVerified) {
-          alert(formatedData.message);
+          alert(formatedData.message + " Redirecionando para a página de login.");
           setModalVisible(false);
           router.navigate("/(auth)/logIn/ecotaxista/page");
         } else {

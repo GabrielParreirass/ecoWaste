@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import apiUrl from "../utils/api_url.json";
+import apiUrl from "../app/utils/api_url.json";
 import { router } from "expo-router";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../app/utils/mqttOptions";
 
 interface AuthProps {
   authState?: {
@@ -54,8 +55,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const role = await SecureStore.getItemAsync("role");
       const options = {
         clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
-        username: "csilab", 
-        password: "WhoAmI#2024", 
+        username: "ecowaste", 
+        password: "ecow@ste", 
       };
 
       client.current = mqtt.connect(API_URL, options);

@@ -1,3 +1,8 @@
 {
-  "apiUrl" : "ws://192.168.40.7:9001"
+  "apiUrl" : "ws://192.168.66.10:9001",
+  "options" : {
+    "clientId": "frontend_",
+    "username": "ecowaste",
+    "password": "ecow@ste"
+  }
 }

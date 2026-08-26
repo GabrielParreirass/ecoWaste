@@ -6,9 +6,10 @@ import DefaultButton from "../../../../../../../components/DefaultButton";
 import { router } from "expo-router";
 import { useState, useEffect, useRef } from "react";
 import CustomModal from "../../../../../../../components/popUps/CustomModal";
-import { useAuth } from "../../../../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../../../../contexts/AuthContext";
 import apiUrl from "../../../../../../../utils/api_url.json";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../../../../../../../utils/mqttOptions";
 
 interface typePaymentKey {
   id: string;
@@ -31,9 +32,11 @@ const PagarComChave = () => {
   const { authState } = useAuth();
 
   const loggedEmail = authState?.loggedEmail;
+  
+  const options = createMqttOptions();
 
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");
@@ -64,7 +67,7 @@ const PagarComChave = () => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       if (topic == `user/getPaymentKeysResponse/${requestId.current}`) {
         const formatedData = JSON.parse(message.toString());
-        setPaymentKeys(formatedData.paymentKeys);
+        setPaymentKeys(formatedData.paymentKeys ?? []);
       }
       if (topic == `user/paymentWithKeyResponse/${requestId.current}`) {
         const formatedData = JSON.parse(message.toString());

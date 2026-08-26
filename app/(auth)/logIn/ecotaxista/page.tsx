@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import PageTop from "../../../components/PageTop";
 import { router } from "expo-router";
 import CustomModal from "../../../components/popUps/CustomModal";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 const EcotaxistaLogIn = () => {
   const [modalVisible, setModalVisible] = useState(false);

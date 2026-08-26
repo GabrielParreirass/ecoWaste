@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import React, { useState } from "react";
 import CardNovaColeta from "../../../../../../components/CardNovaColeta";
 import DefaultButton from "../../../../../../components/DefaultButton";
-import EtapasProps from "../../../../../../types/EtapasProps";
+import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa1 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {

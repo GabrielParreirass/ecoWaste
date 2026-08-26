@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   TextInput,
-  Pressable,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -14,10 +13,10 @@ import React, { useState, useEffect, useRef } from "react";
 import PageTop from "../../../components/PageTop";
 import { router } from "expo-router";
 import CustomModal from "../../../components/popUps/CustomModal";
-import axios from "axios";
 import apiUrl from "../../../utils/api_url.json";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../../../utils/mqttOptions";
 
 const EcotaxistaSignUp = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -34,12 +33,15 @@ const EcotaxistaSignUp = () => {
   const client = useRef<MqttClient | null>(null);
   const requestId = useRef(Date.now().toString());
 
+  const options = createMqttOptions();  
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
+    
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");
-
+      
       client.current?.subscribe(
         `user/verificateOtpResponse/${requestId.current}`,
         (err) => {
@@ -47,6 +49,8 @@ const EcotaxistaSignUp = () => {
             console.log(
               `📡 Inscrito no tópico user/verificateOtpResponse/${requestId.current}`
             );
+          }else{
+            console.error("❌ Erro ao se inscrever no tópico:", err);
           }
         }
       );
@@ -57,7 +61,7 @@ const EcotaxistaSignUp = () => {
       const formatedData = JSON.parse(message.toString());
       if (topic == `user/verificateOtpResponse/${requestId.current}`) {
         if (formatedData.otpVerified) {
-          alert(formatedData.message);
+          alert(formatedData.message + " Redirecionando para a página de login.");
           setModalVisible(false);
           router.navigate("/(auth)/logIn/ecomorador/page");
         } else {
@@ -68,7 +72,7 @@ const EcotaxistaSignUp = () => {
   }, []);
 
   const register = async () => {
-    const role = "ecotaxista"
+    const role = "ecomorador"
     const result = await onRegister!(nomeValue, emailValue, psswdValue, role);
     console.log(result);
     if (result.create) {
@@ -93,6 +97,7 @@ const EcotaxistaSignUp = () => {
   };
 
   const handleConfirmOtp = async (otpInput: string) => {
+    console.log("Confirmando OTP:", otpInput);
     const payload = {
       email: emailValue,
       otp: otpInput,
@@ -114,7 +119,7 @@ const EcotaxistaSignUp = () => {
       >
         <PageTop />
         <View style={styles.container}>
-          <Text style={styles.title}> Olá, ecotaxista, vamos cadastrá-lo</Text>
+          <Text style={styles.title}> Olá, ecomorador, vamos cadastrá-lo</Text>
           <Image
             source={require("../../../../assets/images/imgEcomorador2.png")}
             style={styles.imgEcomorador}

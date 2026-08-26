@@ -1,7 +1,7 @@
 import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from "react-native";
 import React from "react";
 import PageTop from "../../../../components/PageTop";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 

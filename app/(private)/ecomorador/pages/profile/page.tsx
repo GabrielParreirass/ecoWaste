@@ -12,8 +12,9 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import CustomModal from "../../../../components/popUps/CustomModal";
 import { useState, useEffect, useRef } from "react";
 import apiUrl from "../../../../utils/api_url.json";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import mqtt, { MqttClient } from "mqtt";
+import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const Profile = () => {
   const [modalVisibleEditarDados, setModalVisibleEditarDados] = useState(false);
@@ -29,8 +30,10 @@ const Profile = () => {
   const client = useRef<MqttClient | null>(null);
   const requestId = useRef(Date.now().toString());
 
+  const options = createMqttOptions();
+
   useEffect(() => {
-    client.current = mqtt.connect(API_URL);
+    client.current = mqtt.connect(API_URL, options);
 
     client.current.on("connect", () => {
       console.log("✅ Conectado ao broker MQTT");

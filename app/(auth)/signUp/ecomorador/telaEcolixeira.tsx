@@ -1,9 +1,7 @@
 import {
   View,
   Text,
-  Image,
   StyleSheet,
-  TextInput,
   Pressable,
 } from "react-native";
 import React, { useState } from "react";
@@ -56,7 +54,7 @@ const TelaEcolixeira = () => {
       <CustomModal
         visible={modalVisiblePrimeiraOpcao}
         onClose={() => setModalVisiblePrimeiraOpcao(false)}
-        message="Ótimo, chegou a hora de cadastrar sua lixeira. Vamos lá? Escaneie o QR CODE qu vem nela"
+        message="Ótimo, chegou a hora de cadastrar sua lixeira. Vamos lá? Escaneie o QR CODE que vem nela"
         inputValue={inputValue}
         setInputValue={setInputValue}
         onConfirm={() => {
