@@ -55,8 +55,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const role = await SecureStore.getItemAsync("role");
       const options = {
         clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
-        username: "csilab", 
-        password: "WhoAmI#2024", 
+        username: "ecowaste", 
+        password: "ecow@ste", 
       };
 
       client.current = mqtt.connect(API_URL, options);

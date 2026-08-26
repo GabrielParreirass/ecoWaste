@@ -76,6 +76,10 @@ const NovaColeta = () => {
   }, []);
 
   const handleSendColeta = async () => {
+
+    console.log("Latitude: ", location?.latitude);
+    console.log("Longitude: ", location?.longitude);
+
     const payload = {
       email: loggedEmail,
       tipo,
