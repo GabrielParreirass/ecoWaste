@@ -72,58 +72,7 @@ O Node deve ser pelo menos `v22.13.0`. Depois de instalar ou atualizar o Node, r
 
 O projeto usa a CLI local do Expo por meio de `npx`; não é necessário instalar o pacote antigo `expo-cli` globalmente.
 
-## 4. Configurar a conexão com o sistema EcoWaste
-
-### Serviços necessários
-
-Este repositório contém o aplicativo. Ele não inclui a implementação nem as instruções de inicialização do backend ou do broker MQTT. Obtenha com a equipe responsável o endereço, a porta WebSocket, as credenciais e o procedimento para iniciar esses serviços.
-
-Para o funcionamento completo, é necessário que:
-
-1. O broker aceite MQTT sobre **WebSocket**.
-2. O backend do EcoWaste esteja conectado ao broker e processe os tópicos usados pelo aplicativo.
-3. O mecanismo de envio/validação de códigos OTP do backend esteja configurado.
-
-Somente iniciar um broker vazio não implementa login ou cadastro. Sem esses serviços, a tela inicial pode abrir, mas as operações que dependem deles não serão concluídas.
-
-### Endereço do broker
-
-Edite [`app/utils/api_url.json`](app/utils/api_url.json). O campo `apiUrl` atualmente aponta para:
-
-```text
-ws://192.168.66.10:9001
-```
-
-Troque esse valor pelo endereço WebSocket real do broker. Por exemplo, se ele estiver em um computador da rede com IP `192.168.1.100` e listener WebSocket na porta `9001`, use:
-
-```text
-ws://192.168.1.100:9001
-```
-
-Altere apenas o valor de `apiUrl`, preservando os demais campos do JSON. Caso o servidor use TLS ou um caminho específico, informe a URL completa fornecida pela equipe, por exemplo `wss://broker.exemplo.com/mqtt`.
-
-- `localhost` e `127.0.0.1`, quando usados no celular, apontam para o próprio celular.
-- Use o IP do computador que hospeda o broker, que pode ser diferente do computador que executa o Expo.
-- A porta `9001` é a configuração atual do projeto; confirme a porta do seu ambiente.
-- Um endereço `mqtt://...:1883` de MQTT TCP não substitui o endpoint WebSocket esperado pelo aplicativo.
-
-Para descobrir o IP no Windows, execute no computador do broker:
-
-```powershell
-ipconfig
-```
-
-Use o endereço IPv4 do adaptador conectado à rede do celular. O listener do broker precisa aceitar conexões pela rede, e seu firewall deve permitir a porta configurada. Se estiver em Docker, a porta WebSocket também precisa estar publicada para o host.
-
-### Credenciais MQTT
-
-As conexões atuais usam a função de [`app/utils/mqttOptions.ts`](app/utils/mqttOptions.ts). Ajuste `username` e `password` nesse arquivo conforme o broker do seu ambiente e preserve a geração aleatória de `clientId`.
-
-O objeto `options` existente em `api_url.json` **não é usado pelas conexões atuais**. Alterar apenas suas credenciais não altera a autenticação MQTT.
-
-Na implementação atual, a configuração é lida diretamente desses arquivos; não há variáveis `.env` obrigatórias para iniciar o aplicativo.
-
-## 5. Iniciar o Expo para abrir no Expo Go
+## 4. Iniciar o Expo para abrir no Expo Go
 
 Na raiz do projeto, execute:
 
@@ -158,7 +107,7 @@ Mantenha o terminal aberto. Aguarde o servidor Metro iniciar e exibir o QR code.
 
 O [guia oficial de início do desenvolvimento](https://docs.expo.dev/get-started/start-developing/) explica a abertura pelo QR code e a conexão na mesma rede.
 
-## 6. Usar e verificar o aplicativo
+## 5. Usar e verificar o aplicativo
 
 1. Confirme que a tela inicial exibe a marca EcoWaste e os botões **LogIn** e **Cadastro**.
 2. Para uma conta nova, entre em **Cadastro**, selecione o perfil de ecomorador ou ecotaxista e preencha os dados solicitados.
@@ -170,7 +119,7 @@ Se a tela inicial carregar, mas login ou cadastro falharem, confira o broker e o
 
 Para conferir a conexão MQTT, procure no terminal a mensagem `Conectado ao broker MQTT`. Essa mensagem confirma a conexão com o broker; a resposta às operações também depende do backend.
 
-## 7. Rotina de desenvolvimento
+## 6. Rotina de desenvolvimento
 
 - Salve alterações nos arquivos para que o Fast Refresh atualize o aplicativo.
 - Pressione `r` no terminal para recarregar.
@@ -178,7 +127,7 @@ Para conferir a conexão MQTT, procure no terminal a mensagem `Conectado ao brok
 - Pressione `Ctrl+C` para encerrar o servidor.
 - Para executar novamente em outro momento, abra a raiz do projeto e rode `npm start -- --go`.
 
-## 8. Solução de problemas
+## 7. Solução de problemas
 
 ### O QR code não abre ou o aplicativo não conecta ao Metro
 
@@ -252,7 +201,7 @@ npm.cmd start -- --go
 
 Para comandos com `npx`, use `npx.cmd` da mesma maneira.
 
-## 9. Comandos disponíveis
+## 8. Comandos disponíveis
 
 | Comando | Finalidade |
 | --- | --- |
@@ -266,7 +215,7 @@ Para comandos com `npx`, use `npx.cmd` da mesma maneira.
 | `npm test` | Executar os testes Jest em modo de observação. |
 | `npm test -- --watchAll=false` | Executar os testes Jest uma única vez. |
 
-## 10. Estrutura principal
+## 9. Estrutura principal
 
 ```text
 app/                  Telas e rotas do Expo Router
