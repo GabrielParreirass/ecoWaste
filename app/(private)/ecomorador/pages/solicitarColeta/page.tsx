@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import React, { useEffect, useRef } from "react";
 import PageTop from "../../../../components/PageTop";
@@ -14,6 +15,7 @@ import { createMqttOptions } from "../../../../utils/mqttOptions";
 import QRCodeScanner from "../../../../components/QrCodeReader";
 
 const SolicitarColeta = () => {
+  const { t } = useLanguage();
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
   const [userId, setUserId] = React.useState("");
@@ -63,7 +65,7 @@ const SolicitarColeta = () => {
 
       if (topic == `user/cadastrarLixeiraResponse/${requestId.current}`) {
         const formatedData = JSON.parse(message.toString());
-        alert(formatedData.message);
+        alert(t(formatedData.message));
         router.navigate("/(private)/ecomorador/pages/home/page");
       }
     });
@@ -93,7 +95,7 @@ const SolicitarColeta = () => {
           }
         >
           <FontAwesome5 name="trash-restore" size={55} color="white" />
-          <Text style={styles.textCard}>Nova coleta</Text>
+          <Text style={styles.textCard}>{t("Nova coleta")}</Text>
         </Pressable>
         <Pressable
           style={styles.card}
@@ -104,7 +106,7 @@ const SolicitarColeta = () => {
           }
         >
           <Ionicons name="time-outline" size={60} color="white" />
-          <Text style={styles.textCard}>Coleta em espera</Text>
+          <Text style={styles.textCard}>{t("Coleta em espera")}</Text>
         </Pressable>
       </View>
       <View style={styles.containerCards}>
@@ -113,11 +115,11 @@ const SolicitarColeta = () => {
           onPress={() => setShowQrCodeScanner(true)}
         >
           <Entypo name="trash" size={80} color="white" />
-          <Text style={styles.textCard}>Cadastrar Lixeira</Text>
+          <Text style={styles.textCard}>{t("Cadastrar Lixeira")}</Text>
         </Pressable>
         <Pressable style={styles.card} onPress={() => setShowQrCode(true)}>
           <MaterialIcons name="qr-code-2" size={80} color="white" />
-          <Text style={styles.textCard}>QR Code de confirmação</Text>
+          <Text style={styles.textCard}>{t("QR Code de confirmação")}</Text>
         </Pressable>
       </View>
 
@@ -130,7 +132,7 @@ const SolicitarColeta = () => {
             backgroundColor="white"
           />
           <Pressable style={styles.button} onPress={() => setShowQrCode(false)}>
-            <Text style={styles.textButton}>Fechar</Text>
+            <Text style={styles.textButton}>{t("Fechar")}</Text>
           </Pressable>
         </View>
       )}
@@ -161,7 +163,7 @@ const SolicitarColeta = () => {
             router.replace("/(private)/ecomorador/pages/home/page")
           }
         >
-          <Text style={styles.textButton}>Voltar</Text>
+          <Text style={styles.textButton}>{t("Voltar")}</Text>
         </Pressable>
       </View>
     </ScrollView>

@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, TextInput } from "react-native";
 import React from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -12,6 +13,7 @@ import apiUrl from "../../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../../utils/mqttOptions";
 
 const BoasCausas = () => {
+  const { t } = useLanguage();
   const [modalMsgAgradecimentoVisible, setModalMsgAgradecimentoVisible] =
   useState(false);
   const { authState } = useAuth();
@@ -44,7 +46,7 @@ const BoasCausas = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedData = JSON.parse(message.toString());
-      window.alert(formatedData.message);
+      window.alert(t(formatedData.message));
     });
   }, []);
 
@@ -70,26 +72,23 @@ const BoasCausas = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>AJUDE O ASILO DE SANTA RITA:</Text>
+        <Text style={styles.title}>{t("AJUDE O ASILO DE SANTA RITA:")}</Text>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Esse valor será revertido em produtos (alimentos, higiene pessoal,
-          etc.) pelos nossos parceiros.
-        </Text>
+        <Text style={styles.title}>{t("Esse valor será revertido em produtos (alimentos, higiene pessoal, etc.) pelos nossos parceiros.")}</Text>
       </View>
       <View style={styles.containerInput}>
         <TextInput
-          placeholder="Valor (E$)"
+          placeholder={t("Valor (E$)")}
           style={styles.input}
           onChangeText={(e) => setValorPagamento(e)}
           value={valorPagamento}
         />
       </View>
       <View style={styles.containerDefaultButton}>
-        <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
         <DefaultButton
-          text={"Confirmar"}
+          text={t("Confirmar")}
           onPressButton={() => {
             handlePagamento();
             setModalMsgAgradecimentoVisible(true);
@@ -100,12 +99,12 @@ const BoasCausas = () => {
       <CustomModal
         visible={modalMsgAgradecimentoVisible}
         onClose={() => setModalMsgAgradecimentoVisible(false)}
-        message="O asilo de Santa Rita do Sapucaí agradece sua doação!"
+        message={t("O asilo de Santa Rita do Sapucaí agradece sua doação!")}
         showInput={false}
         onConfirm={() => {
           setModalMsgAgradecimentoVisible(false);
         }}
-        confirmButtonText="Confirmar"
+        confirmButtonText={t("Confirmar")}
       />
     </ScrollView>
   );

@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -19,6 +20,7 @@ import QRCodeScanner from "../../../../components/QrCodeReader";
 import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const Reservas = () => {
+  const { t } = useLanguage();
   const API_URL = apiUrl.apiUrl;
   const client = useRef<MqttClient | null>(null);
   const { authState } = useAuth();
@@ -40,7 +42,7 @@ const Reservas = () => {
 
   const abrirMapa = (lat: number, lng: number) => {
     if (!lat || !lng) {
-      window.alert("Coordenadas não disponíveis para esta lixeira.");
+      window.alert(t("Coordenadas não disponíveis para esta lixeira."));
       return;
     }
     // URL universal do Google Maps para marcação de rota
@@ -50,7 +52,7 @@ const Reservas = () => {
       if (supported) {
         Linking.openURL(url);
       } else {
-        window.alert("Não foi possível abrir o mapa.");
+        window.alert(t("Não foi possível abrir o mapa."));
       }
     });
   };
@@ -170,9 +172,7 @@ const Reservas = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Eco Lixeiras reservadas, clique para detalhes:
-        </Text>
+        <Text style={styles.title}>{t("Eco Lixeiras reservadas, clique para detalhes:")}</Text>
         <View
           style={{
             flexDirection: "row",
@@ -190,9 +190,7 @@ const Reservas = () => {
                 borderRadius: 3,
               }}
             />
-            <Text style={{ color: "black", fontSize: 13 }}>
-              Coletas de encontro
-            </Text>
+            <Text style={{ color: "black", fontSize: 13 }}>{t("Coletas de encontro")}</Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <View
@@ -203,14 +201,12 @@ const Reservas = () => {
                 borderRadius: 3,
               }}
             />
-            <Text style={{ color: "black", fontSize: 13 }}>
-              Coletas de lixeira
-            </Text>
+            <Text style={{ color: "black", fontSize: 13 }}>{t("Coletas de lixeira")}</Text>
           </View>
         </View>
         <View>
-            <Text>{lixeiraVazia ? "Lixeira vazia" : "Lixeira cheia"}</Text>
-            <Text>{trancada ? "Lixeira trancada" : "Lixeira destrancada"}</Text>
+            <Text>{lixeiraVazia ? t("Lixeira vazia") : t("Lixeira cheia")}</Text>
+            <Text>{trancada ? t("Lixeira trancada") : t("Lixeira destrancada")}</Text>
           </View>
       </View>
 
@@ -239,7 +235,7 @@ const Reservas = () => {
                   { color: i.lixeiraId ? "#F4D03F" : "#096600" },
                 ]}
               >
-                {i.type}: {i.peso}
+                {t(i.type)}: {t(i.peso)}
               </Text>
             </View>
           </TouchableOpacity>
@@ -247,7 +243,7 @@ const Reservas = () => {
       </View>
 
       <View style={{ width: "70%", margin: "auto" }}>
-        <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
       </View>
 
       {showQrCodeScanner && (
@@ -272,10 +268,10 @@ const Reservas = () => {
               setShowQrCodeScanner2(false);
               console.log(data);
               if (data == selectedColeta.usersId) {
-                alert("Coleta confirmada!");
+                alert(t("Coleta confirmada!"));
                 confirmarColeta();
               } else {
-                alert("Coleta não pertence ao usuario, tente novamente");
+                alert(t("Coleta não pertence ao usuario, tente novamente"));
               }
             }}
           />
@@ -288,12 +284,12 @@ const Reservas = () => {
             <CustomModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
-              message={`Material selecionado: ${selectedColeta.type} \n Quantidade: ${selectedColeta.peso} \n Horario: ${selectedColeta.horario} \n Dia da semana: ${selectedColeta.dia}`}
+              message={t("Material selecionado: {{material}} \n Quantidade: {{quantity}} \n Horario: {{time}} \n Dia da semana: {{day}}", { material: t(selectedColeta.type), quantity: t(selectedColeta.peso), time: t(selectedColeta.horario), day: t(selectedColeta.dia) })}
               showInput={false}
               onMapPress={() =>
                 abrirMapa(selectedColeta.latitude, selectedColeta.longitude)
               }
-              confirmButtonText="Destrancar"
+              confirmButtonText={t("Destrancar")}
               onConfirm={() => {
                 setShowQrCodeScanner(true);
                 setModalVisible(false);
@@ -303,12 +299,12 @@ const Reservas = () => {
             <CustomModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
-              message={`Material selecionado: ${selectedColeta.type} \n Quantidade: ${selectedColeta.peso} \n Horario: ${selectedColeta.horario} \n Dia da semana: ${selectedColeta.dia}`}
+              message={t("Material selecionado: {{material}} \n Quantidade: {{quantity}} \n Horario: {{time}} \n Dia da semana: {{day}}", { material: t(selectedColeta.type), quantity: t(selectedColeta.peso), time: t(selectedColeta.horario), day: t(selectedColeta.dia) })}
               onMapPress={() =>
                 abrirMapa(selectedColeta.latitude, selectedColeta.longitude)
               }
               showInput={false}
-              confirmButtonText="Escanear Qr Code do usuario"
+              confirmButtonText={t("Escanear Qr Code do usuario")}
               stackedButtons={true}
               onConfirm={() => {
                 setShowQrCodeScanner2(true);
@@ -322,24 +318,24 @@ const Reservas = () => {
       <CustomModal
         visible={modalConfirmacaoVisible}
         onClose={() => setModalConfirmacaoVisible(false)}
-        message={`Para concluir sua coleta, certifique-se que: \n - A lixeira esta vazia`}
+        message={t("Para concluir sua coleta, certifique-se que: \n - A lixeira esta vazia")}
         showInput={false}
-        confirmButtonText="Confirmar e trancar"
+        confirmButtonText={t("Confirmar e trancar")}
         stackedButtons={true}
         onConfirm={() => {
           client.current?.publish("EcoWaste/destrancar", "0");
           setTrancada(true);
           if (lixeiraVazia && trancada) {
             setModalConfirmacaoVisible(false);
-            window.alert("Coleta confirmada com sucesso");
+            window.alert(t("Coleta confirmada com sucesso"));
             confirmarColeta();
           } else {
             if (!lixeiraVazia) {
-              window.alert("Lixeira continua cheia!");
+              window.alert(t("Lixeira continua cheia!"));
             } else if (!trancada) {
-              window.alert("Lixeira continua aberta!");
+              window.alert(t("Lixeira continua aberta!"));
             } else {
-              window.alert("Lixeira continua cheia e aberta!");
+              window.alert(t("Lixeira continua cheia e aberta!"));
             }
           }
         }}

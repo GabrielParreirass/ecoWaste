@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -19,6 +20,7 @@ import CustomModal from "../../../components/popUps/CustomModal";
 import { useAuth } from "../../../../contexts/AuthContext";
 
 const EcotaxistaLogIn = () => {
+  const { t } = useLanguage();
   const [modalVisible, setModalVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -36,12 +38,12 @@ const EcotaxistaLogIn = () => {
         console.log("Estou aqui!: ", result);
         setModalVisible(true);
       } else {
-        alert("Falha no login");
+        alert(t("Falha no login"));
       }
     } catch (error) {
       console.error("❌ Falha ao fazer login:", error);
       const message = error instanceof Error ? error.message : String(error);
-      alert(`Falha MQTT: ${message}`);
+      alert(t("Falha MQTT: {{message}}", { message: message }));
     }
   };
 
@@ -50,7 +52,7 @@ const EcotaxistaLogIn = () => {
     if (result) {
       console.log("ResultConfirmOtp:", result);
     } else {
-      alert("O código inserido está incorreto!");
+      alert(t("O código inserido está incorreto!"));
     }
   };
 
@@ -78,9 +80,7 @@ const EcotaxistaLogIn = () => {
         >
           <PageTop />
           <View style={styles.container}>
-            <Text style={styles.welcomeText}>
-              Olá, ecomorador, bem vindo de volta!
-            </Text>
+            <Text style={styles.welcomeText}>{t("Olá, ecomorador, bem vindo de volta!")}</Text>
             <Image
               source={require("../../../../assets/images/imgEcomorador2.png")}
               style={styles.imgEcomorador}
@@ -90,7 +90,7 @@ const EcotaxistaLogIn = () => {
           <View style={styles.containerInput}>
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder={t("Email")}
               value={emailValue}
               onChangeText={(e) => setEmailValue(e)}
               keyboardType="email-address"
@@ -99,7 +99,7 @@ const EcotaxistaLogIn = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Senha"
+              placeholder={t("Senha")}
               value={psswdValue}
               onChangeText={(e) => setPsswdValue(e)}
               secureTextEntry={true}
@@ -114,7 +114,7 @@ const EcotaxistaLogIn = () => {
               style={styles.button}
               onPress={() => router.back()}
             >
-              <Text style={styles.textButton}>Voltar</Text>
+              <Text style={styles.textButton}>{t("Voltar")}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -122,7 +122,7 @@ const EcotaxistaLogIn = () => {
               style={styles.button}
               onPress={() => handleSubmit()}
             >
-              <Text style={styles.textButton}>Login</Text>
+              <Text style={styles.textButton}>{t("Login")}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -131,7 +131,7 @@ const EcotaxistaLogIn = () => {
       <CustomModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        message="Para efetuar o login, insira o código de verificação enviado para seu email: "
+        message={t("Para efetuar o login, insira o código de verificação enviado para seu email: ")}
         showInput={true}
         inputValue={inputValue}
         setInputValue={setInputValue}
@@ -142,7 +142,7 @@ const EcotaxistaLogIn = () => {
       <CustomModal
         visible={alertModalVisible}
         onClose={() => setAlertModalVisible(false)}
-        message="Preencha todos os campos!"
+        message={t("Preencha todos os campos!")}
         showInput={false}
         inputValue={inputValue}
         setInputValue={setInputValue}

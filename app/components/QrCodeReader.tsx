@@ -1,8 +1,10 @@
+import { useLanguage } from "../../contexts/LanguageContext";
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button, Alert } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 
 const QRCodeScanner = ({ onScan }:any) => {
+  const { t } = useLanguage();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
@@ -19,11 +21,11 @@ const QRCodeScanner = ({ onScan }:any) => {
   };
 
   if (!permission) {
-    return <Text>Solicitando permissão para acessar a câmera...</Text>;
+    return <Text>{t("Solicitando permissão para acessar a câmera...")}</Text>;
   }
 
   if (!permission.granted) {
-    return <Text>Permissão para câmera negada.</Text>;
+    return <Text>{t("Permissão para câmera negada.")}</Text>;
   }
 
   return (
@@ -36,7 +38,7 @@ const QRCodeScanner = ({ onScan }:any) => {
         }}
       />
       {scanned && (
-        <Button title="Ler novamente" onPress={() => setScanned(false)} />
+        <Button title={t("Ler novamente")} onPress={() => setScanned(false)} />
       )}
     </View>
   );

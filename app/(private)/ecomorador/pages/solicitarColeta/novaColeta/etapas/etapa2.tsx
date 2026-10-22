@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import React, { useState } from "react";
 import DefaultButton from "../../../../../../components/DefaultButton";
@@ -5,33 +6,32 @@ import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa2 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <View>
-        <Text style={styles.title}>
-          Estime a quantidade
-        </Text>
+        <Text style={styles.title}>{t("Estime a quantidade")}</Text>
       </View>
       <View style={styles.containerCards}>
         <Pressable style={styles.card} onPress={() => onConfirm!("Menos que 500g")}>
-            <Text style={styles.textCard}>Menos que 500g</Text>
+            <Text style={styles.textCard}>{t("Menos que 500g")}</Text>
         </Pressable>
         <Pressable style={styles.card} onPress={() => onConfirm!("Entre 500g e 2kg")}>
-            <Text style={styles.textCard}>Entre 500g e 2kg</Text>
+            <Text style={styles.textCard}>{t("Entre 500g e 2kg")}</Text>
         </Pressable>
         <Pressable style={styles.card} onPress={() => onConfirm!("Entre 2kg e 5kg")}>
-            <Text style={styles.textCard}>Entre 2kg e 5kg</Text>
+            <Text style={styles.textCard}>{t("Entre 2kg e 5kg")}</Text>
         </Pressable >
         <Pressable style={styles.card} onPress={() => onConfirm!("Entre 5kg e 10kg")}>
-            <Text style={styles.textCard}>Entre 5kg e 10kg</Text>
+            <Text style={styles.textCard}>{t("Entre 5kg e 10kg")}</Text>
         </Pressable >
         <Pressable style={styles.card} onPress={() => onConfirm!("Mais que 10kg")}>
-            <Text style={styles.textCard}>Mais que 10kg</Text>
+            <Text style={styles.textCard}>{t("Mais que 10kg")}</Text>
         </Pressable>
       </View>
 
       <View style={{marginTop:20, width:'50%', margin:"auto"}}>
-        <DefaultButton text={"Cancelar"} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/page")}/>
+        <DefaultButton text={t("Cancelar")} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/page")}/>
       </View>
       
     </ScrollView>

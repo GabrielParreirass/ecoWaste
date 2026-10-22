@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import React, { useRef } from "react";
 import PageTop from "../../../../../../components/PageTop";
@@ -12,6 +13,7 @@ import mqtt, { MqttClient } from "mqtt";
 import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const MeusCupons = () => {
+  const { t } = useLanguage();
   const [showQrCode, setShowQrCode] = useState(false);
   const [cupons, setCupons] = useState([]);
   const [qrValue, setQrValue] = useState("");
@@ -69,7 +71,7 @@ const MeusCupons = () => {
       {showQrCode ? (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>SEU QR CODE DE DESCONTO:</Text>
+            <Text style={styles.title}>{t("SEU QR CODE DE DESCONTO:")}</Text>
           </View>
           <View style={{ display: "flex", alignItems: "center", padding: 10 }}>
             <QRCode
@@ -81,7 +83,7 @@ const MeusCupons = () => {
           </View>
           <View style={{ width: "70%", margin: "auto" }}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => setShowQrCode(false)}
             />
           </View>
@@ -89,13 +91,11 @@ const MeusCupons = () => {
       ) : (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>
-              Veja abaixo seus cupons, para usá-los, selecione um:
-            </Text>
+            <Text style={styles.title}>{t("Veja abaixo seus cupons, para usá-los, selecione um:")}</Text>
           </View>
           <View style={styles.containerKeys}>
 
-            {cupons.length == 0 ? (<View> <Text>Você não possui nenhum cupom.</Text> </View>) : (<View>{cupons.map((i: any) => (
+            {cupons.length == 0 ? (<View> <Text>{t("Você não possui nenhum cupom.")}</Text> </View>) : (<View>{cupons.map((i: any) => (
               <Pressable
                 style={styles.key}
                 onPress={() => {
@@ -107,8 +107,7 @@ const MeusCupons = () => {
               >
                 <View>
                   <Text style={styles.textKeys}>
-                    {i.name} | {i.value} de desconto
-                  </Text>
+                    {i.name} | {i.value}{t(" de desconto")}</Text>
                 </View>
               </Pressable>
             ))}</View>)}
@@ -117,7 +116,7 @@ const MeusCupons = () => {
           </View>
           <View style={{ width: "70%", margin: "auto" }}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => router.back()}
             />
           </View>

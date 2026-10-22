@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import PageTop from "../../../../../components/PageTop";
@@ -9,6 +10,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import DefaultButton from "../../../../../components/DefaultButton";
 
 const DescontoSupermercado = () => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <PageTop profile={false} />
@@ -18,10 +20,7 @@ const DescontoSupermercado = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Nossos parceiros oferecem descontos para você. Consulte cupons
-          disponíveis e seus cupons.
-        </Text>
+        <Text style={styles.title}>{t("Nossos parceiros oferecem descontos para você. Consulte cupons disponíveis e seus cupons.")}</Text>
       </View>
       <View style={styles.containerBtns}>
         <TouchableOpacity
@@ -39,7 +38,7 @@ const DescontoSupermercado = () => {
             style={styles.button}
           >
             <MaterialIcons name="discount" size={80} color="white" />
-            <Text style={styles.textButton}>Cupons</Text>
+            <Text style={styles.textButton}>{t("Cupons")}</Text>
           </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity
@@ -57,12 +56,12 @@ const DescontoSupermercado = () => {
             style={styles.button}
           >
             <FontAwesome name="shopping-bag" size={80} color="white" />
-            <Text style={styles.textButton}>Meus cupons</Text>
+            <Text style={styles.textButton}>{t("Meus cupons")}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
       <View style={{ width: "70%", margin: "auto" }}>
-        <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
       </View>
     </ScrollView>
   );

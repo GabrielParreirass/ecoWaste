@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import PageTop from "../../../../../components/PageTop";
@@ -9,16 +10,17 @@ import apiUrl from "../../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../../utils/mqttOptions";
 
 interface tipoColeta {
-  peso: String;
-  dia: String;
-  horario: String;
-  type: String;
-  expira: String;
-  status: String;
+  peso: string;
+  dia: string;
+  horario: string;
+  type: string;
+  expira: string;
+  status: string;
   id?: string; 
 }
 
 const ColetasEmEspera = () => {
+  const { t } = useLanguage();
   const API_URL = apiUrl.apiUrl;
 
 
@@ -42,7 +44,7 @@ const ColetasEmEspera = () => {
       requestId: requestId.current,
     };
     client.current?.publish("user/cancelarColeta", JSON.stringify(payload));
-    alert("Solicitação de cancelamento enviada! Aguarde...");
+    alert(t("Solicitação de cancelamento enviada! Aguarde..."));
   };
 
   // Efeito para recriar a lista filtrada sempre que as coletas do servidor atualizarem ou o filtro mudar
@@ -127,12 +129,12 @@ const ColetasEmEspera = () => {
               <View style={styles.containerMainInfos}>
                 {filteredColetas.map((i: tipoColeta, index: number) => (
                   <View key={index} style={styles.containerInfos}>
-                    <Text style={styles.textInfos}>Tipo: {i.type}</Text>
-                    <Text style={styles.textInfos}>Quantidade: {i.peso}</Text>
-                    <Text style={styles.textInfos}>Dia: {i.dia}</Text>
-                    <Text style={styles.textInfos}>Horário: {i.horario}</Text>
-                    <Text style={styles.textInfos}>Expira em: {i.expira}</Text>
-                    <Text style={styles.textInfos}>Status: {i.status}</Text>
+                    <Text style={styles.textInfos}>{t("Tipo: ")}{t(i.type)}</Text>
+                    <Text style={styles.textInfos}>{t("Quantidade: ")}{t(i.peso)}</Text>
+                    <Text style={styles.textInfos}>{t("Dia: ")}{t(i.dia)}</Text>
+                    <Text style={styles.textInfos}>{t("Horário: ")}{t(i.horario)}</Text>
+                    <Text style={styles.textInfos}>{t("Expira em: ")}{i.expira}</Text>
+                    <Text style={styles.textInfos}>{t("Status: ")}{t(i.status)}</Text>
                   </View>
                 ))}
 
@@ -140,7 +142,7 @@ const ColetasEmEspera = () => {
                   onPress={() => setShowEntulhos(!showEntulhos)}
                   style={styles.button3}
                 >
-                  <Text style={styles.textButton}>Fechar</Text>
+                  <Text style={styles.textButton}>{t("Fechar")}</Text>
                 </Pressable>
               </View>
             </ScrollView>
@@ -149,12 +151,12 @@ const ColetasEmEspera = () => {
               <View style={styles.containerMainInfos}>
                 {filteredColetas.map((i: tipoColeta, index: number) => (
                   <View key={index} style={styles.containerInfos}>
-                    <Text style={styles.textInfos}>Tipo: {i.type}</Text>
-                    <Text style={styles.textInfos}>Quantidade: {i.peso}</Text>
-                    <Text style={styles.textInfos}>Dia: {i.dia}</Text>
-                    <Text style={styles.textInfos}>Horário: {i.horario}</Text>
-                    <Text style={styles.textInfos}>Expira em: {i.expira}</Text>
-                    <Text style={styles.textInfos}>Status: {i.status}</Text>
+                    <Text style={styles.textInfos}>{t("Tipo: ")}{t(i.type)}</Text>
+                    <Text style={styles.textInfos}>{t("Quantidade: ")}{t(i.peso)}</Text>
+                    <Text style={styles.textInfos}>{t("Dia: ")}{t(i.dia)}</Text>
+                    <Text style={styles.textInfos}>{t("Horário: ")}{t(i.horario)}</Text>
+                    <Text style={styles.textInfos}>{t("Expira em: ")}{i.expira}</Text>
+                    <Text style={styles.textInfos}>{t("Status: ")}{t(i.status)}</Text>
                     <View style={styles.containerButtons}>
                       <TouchableOpacity
                         style={[styles.button, { backgroundColor: "#fabd06" }]}
@@ -162,13 +164,13 @@ const ColetasEmEspera = () => {
                           // Função de editar aqui
                         }}
                       >
-                        <Text style={styles.textButton}>Editar coleta</Text>
+                        <Text style={styles.textButton}>{t("Editar coleta")}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.button, { backgroundColor: "#fa0606" }]}
                         onPress={() => cancelarColeta(i)}
                       >
-                        <Text style={styles.textButton}>Cancelar coleta</Text>
+                        <Text style={styles.textButton}>{t("Cancelar coleta")}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -177,7 +179,7 @@ const ColetasEmEspera = () => {
                   onPress={() => setShowResiduos(!showResiduos)}
                   style={styles.button3}
                 >
-                  <Text style={styles.textButton}>Fechar</Text>
+                  <Text style={styles.textButton}>{t("Fechar")}</Text>
                 </Pressable>
               </View>
             </ScrollView>
@@ -186,9 +188,7 @@ const ColetasEmEspera = () => {
       ) : (
         <>
           <View>
-            <Text style={styles.title}>
-              Aqui estão suas solicitações de coleta. Clique para detalhes
-            </Text>
+            <Text style={styles.title}>{t("Aqui estão suas solicitações de coleta. Clique para detalhes")}</Text>
           </View>
           <View style={styles.containerButtons}>
             <Pressable
@@ -198,7 +198,7 @@ const ColetasEmEspera = () => {
                 setShowResiduos(!showResiduos);
               }}
             >
-              <Text style={styles.textButton}>Todos</Text>
+              <Text style={styles.textButton}>{t("Todos")}</Text>
             </Pressable>
             <Pressable
               style={styles.button}
@@ -207,7 +207,7 @@ const ColetasEmEspera = () => {
                 setShowResiduos(!showResiduos);
               }}
             >
-              <Text style={styles.textButton}>Papel</Text>
+              <Text style={styles.textButton}>{t("Papel")}</Text>
             </Pressable>
             <Pressable
               style={styles.button}
@@ -216,7 +216,7 @@ const ColetasEmEspera = () => {
                 setShowResiduos(!showResiduos);
               }}
             >
-              <Text style={styles.textButton}>Plástico</Text>
+              <Text style={styles.textButton}>{t("Plástico")}</Text>
             </Pressable>
             <Pressable
               style={styles.button}
@@ -225,7 +225,7 @@ const ColetasEmEspera = () => {
                 setShowResiduos(!showResiduos);
               }}
             >
-              <Text style={styles.textButton}>Vidro</Text>
+              <Text style={styles.textButton}>{t("Vidro")}</Text>
             </Pressable>
             <Pressable
               style={styles.button}
@@ -234,7 +234,7 @@ const ColetasEmEspera = () => {
                 setShowResiduos(!showResiduos);
               }}
             >
-              <Text style={styles.textButton}>Metal</Text>
+              <Text style={styles.textButton}>{t("Metal")}</Text>
             </Pressable>
             <Pressable
               style={styles.button}
@@ -243,7 +243,7 @@ const ColetasEmEspera = () => {
                 setShowResiduos(!showResiduos);
               }}
             >
-              <Text style={styles.textButton}>Resíduo Orgânico</Text>
+              <Text style={styles.textButton}>{t("Resíduo Orgânico")}</Text>
             </Pressable>
             <Pressable
               style={styles.button}
@@ -252,12 +252,12 @@ const ColetasEmEspera = () => {
                 setShowEntulhos(!showEntulhos);
               }}
             >
-              <Text style={styles.textButton}>Entulhos</Text>
+              <Text style={styles.textButton}>{t("Entulhos")}</Text>
             </Pressable>
           </View>
           <View style={styles.containerButtons}>
             <Pressable style={styles.button2} onPress={() => router.back()}>
-              <Text style={styles.textButton}>Voltar</Text>
+              <Text style={styles.textButton}>{t("Voltar")}</Text>
             </Pressable>
           </View>
         </>

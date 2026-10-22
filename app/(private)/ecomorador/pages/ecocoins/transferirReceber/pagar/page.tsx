@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
 import React from "react";
 import { StyleSheet } from "react-native";
@@ -16,12 +17,13 @@ import apiUrl from "../../../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const Pagar = () => {
+  const { t } = useLanguage();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmDataVisible, setModalConfirmDataVisible] = useState(false);
   const [emailDestinatario, setEmailDestinatario] = useState("");
   const [valorPagamento, setValorPagamento] = useState("");
   const [showQrCodeScanner, setShowQrCodeScanner] = useState(false);
-  const [messageConfirmacaoModal, setMessageConfirmacaoModal] = useState("");
+  const [messageConfirmacaoModal, setMessageConfirmacaoModal] = useState<import("../../../../../../../i18n/translate").Message>("");
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
   const client = useRef<MqttClient | null>(null);
@@ -51,7 +53,7 @@ const Pagar = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedData = JSON.parse(message.toString());
-      window.alert(formatedData.message);
+      window.alert(t(formatedData.message));
     });
   }, []);
 
@@ -82,31 +84,27 @@ const Pagar = () => {
           </View>
         </View>
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>
-            INSIRA O EMAIL DO USUÁRIO E O VALOR DO PAGAMENTO:
-          </Text>
+          <Text style={styles.title}>{t("INSIRA O EMAIL DO USUÁRIO E O VALOR DO PAGAMENTO:")}</Text>
         </View>
         <View style={styles.containerInput}>
           <TextInput
-            placeholder="Email do destinatário"
+            placeholder={t("Email do destinatário")}
             style={styles.input}
             onChangeText={(e) => setEmailDestinatario(e)}
             value={emailDestinatario}
           />
           <TextInput
-            placeholder="Valor (E$)"
+            placeholder={t("Valor (E$)")}
             style={styles.input}
             onChangeText={(e) => setValorPagamento(e)}
             value={valorPagamento}
           />
         </View>
         <TouchableOpacity style={styles.containerDefaultButton}>
-          <DefaultButton text={"Pagar"} onPressButton={() => handlePagamento()} />
+          <DefaultButton text={t("Pagar")} onPressButton={() => handlePagamento()} />
         </TouchableOpacity>
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>
-            VOCÊ TAMBÉM PODE PAGAR POR QR CODE OU CÓDIGO CHAVE:
-          </Text>
+          <Text style={styles.title}>{t("VOCÊ TAMBÉM PODE PAGAR POR QR CODE OU CÓDIGO CHAVE:")}</Text>
         </View>
         <View style={styles.containerIcons}>
           <TouchableOpacity activeOpacity={0.7} onPress={() => setModalVisible(true)}>
@@ -145,7 +143,7 @@ const Pagar = () => {
                 const formatedData = JSON.parse(data);
                 setShowQrCodeScanner(false);
                 setMessageConfirmacaoModal(
-                  `Confira as informações de pagamento:\nDestinatário: ${formatedData.emailRecebedor}\nValor(E$): ${formatedData.valor},00 \nConfirme sua transação!`
+                  { key: "Confira as informações de pagamento:\nDestinatário: {{recipient}}\nValor(E$): {{amount}},00 \nConfirme sua transação!", values: { recipient: formatedData.emailRecebedor, amount: formatedData.valor } }
                 );
                 setValorPagamento(formatedData.valor);
                 setEmailDestinatario(formatedData.emailRecebedor);
@@ -155,20 +153,20 @@ const Pagar = () => {
           </View>
         )}
         <View style={{ width: "70%", margin: "auto", paddingBottom: 10 }}>
-          <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+          <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
         </View>
         <CustomModal
           visible={modalVisible}
           onClose={() => {
             setModalVisible(false);
           }}
-          message="Aponte sua camera para o QR Code para efetuar o pagamento!"
+          message={t("Aponte sua camera para o QR Code para efetuar o pagamento!")}
           showInput={false}
           onConfirm={() => {
             setShowQrCodeScanner(true);
             setModalVisible(false);
           }}
-          confirmButtonText="Escanear"
+          confirmButtonText={t("Escanear")}
         />
         <CustomModal
           visible={modalConfirmDataVisible}
@@ -179,7 +177,7 @@ const Pagar = () => {
             setModalConfirmDataVisible(false);
             handlePagamento();
           }}
-          confirmButtonText="Confirmar"
+          confirmButtonText={t("Confirmar")}
         />
       </ScrollView>
     </SafeAreaView>

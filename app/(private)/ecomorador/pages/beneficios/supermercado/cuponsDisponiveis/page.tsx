@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import React, { useEffect, useRef } from "react";
 import PageTop from "../../../../../../components/PageTop";
@@ -12,6 +13,7 @@ import apiUrl from "../../../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const CuponsDisponiveis = () => {
+  const { t } = useLanguage();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [textoModal, setTextoModal] = useState("");
@@ -49,7 +51,7 @@ const CuponsDisponiveis = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedMessage = JSON.parse(message.toString());
-      alert(formatedMessage.message);
+      alert(t(formatedMessage.message));
     });
   }, []);
 
@@ -76,10 +78,7 @@ const CuponsDisponiveis = () => {
 
       <View>
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>
-            Seus EcoCoins podem te garantir descontos em estabelecimentos
-            conveniados! Consulte os cupons disponíveis:
-          </Text>
+          <Text style={styles.title}>{t("Seus EcoCoins podem te garantir descontos em estabelecimentos conveniados! Consulte os cupons disponíveis:")}</Text>
         </View>
         <View style={styles.containerKeys}>
           <Pressable
@@ -94,7 +93,7 @@ const CuponsDisponiveis = () => {
             }}
           >
             <View>
-              <Text style={styles.textKeys}>ALVORADA: 5% de desconto</Text>
+              <Text style={styles.textKeys}>{t("ALVORADA: 5% de desconto")}</Text>
             </View>
           </Pressable>
           <Pressable
@@ -109,7 +108,7 @@ const CuponsDisponiveis = () => {
             }}
           >
             <View>
-              <Text style={styles.textKeys}>UNISUL: 5% de desconto</Text>
+              <Text style={styles.textKeys}>{t("UNISUL: 5% de desconto")}</Text>
             </View>
           </Pressable>
           <Pressable
@@ -124,12 +123,12 @@ const CuponsDisponiveis = () => {
             }}
           >
             <View>
-              <Text style={styles.textKeys}>MARISTELA: 10% de desconto</Text>
+              <Text style={styles.textKeys}>{t("MARISTELA: 10% de desconto")}</Text>
             </View>
           </Pressable>
         </View>
         <View style={{ width: "70%", margin: "auto" }}>
-          <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+          <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
         </View>
       </View>
 

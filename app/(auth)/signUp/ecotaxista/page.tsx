@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -20,6 +21,7 @@ import mqtt, { MqttClient } from "mqtt";
 import { createMqttOptions } from "../../../utils/mqttOptions";
 
 const EcotaxistaSignUp = () => {
+  const { t } = useLanguage();
   const [modalVisible, setModalVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [loginModalVisible, setLoginModalVisible] = useState(false);
@@ -59,11 +61,11 @@ const EcotaxistaSignUp = () => {
       const formatedData = JSON.parse(message.toString());
       if (topic == `user/verificateOtpResponse/${requestId.current}`) {
         if (formatedData.otpVerified) {
-          alert(formatedData.message + " Redirecionando para a página de login.");
+          alert(t(formatedData.message) + t(" Redirecionando para a página de login."));
           setModalVisible(false);
           router.navigate("/(auth)/logIn/ecotaxista/page");
         } else {
-          alert(formatedData.message);
+          alert(t(formatedData.message));
         }
       }
     });
@@ -76,7 +78,7 @@ const EcotaxistaSignUp = () => {
     if (result.create) {
       setModalVisible(true);
     } else {
-      alert(result.message);
+      alert(t(result.message));
     }
   };
 
@@ -124,7 +126,7 @@ const EcotaxistaSignUp = () => {
       >
         <PageTop />
         <View style={styles.container}>
-          <Text style={styles.title}> Olá, ecotaxista, vamos cadastrá-lo</Text>
+          <Text style={styles.title}>{t(" Olá, ecotaxista, vamos cadastrá-lo")}</Text>
           <Image
             source={require("../../../../assets/images/imgEcomorador2.png")}
             style={styles.imgEcomorador}
@@ -134,19 +136,19 @@ const EcotaxistaSignUp = () => {
         <View style={styles.containerInput}>
           <TextInput
             style={styles.input}
-            placeholder="Nome"
+            placeholder={t("Nome")}
             value={nomeValue}
             onChangeText={(e) => setNomeValue(e)}
           ></TextInput>
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder={t("Email")}
             value={emailValue}
             onChangeText={(e) => setEmailValue(e)}
           ></TextInput>
           <TextInput
             style={styles.input}
-            placeholder="Senha"
+            placeholder={t("Senha")}
             value={psswdValue}
             onChangeText={(e) => setPsswdValue(e)}
             secureTextEntry={true}
@@ -159,7 +161,7 @@ const EcotaxistaSignUp = () => {
             style={styles.button}
             onPress={() => router.back()}
           >
-            <Text style={styles.textButton}>Voltar</Text>
+            <Text style={styles.textButton}>{t("Voltar")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -167,7 +169,7 @@ const EcotaxistaSignUp = () => {
             style={styles.button}
             onPress={() => handleSubmit()}
           >
-            <Text style={styles.textButton}>Cadastrar</Text>
+            <Text style={styles.textButton}>{t("Cadastrar")}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -175,7 +177,7 @@ const EcotaxistaSignUp = () => {
       <CustomModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        message="Estamos verificando seu email. Informe o código enviado: "
+        message={t("Estamos verificando seu email. Informe o código enviado: ")}
         showInput={true}
         inputValue={inputValue}
         setInputValue={setInputValue}
@@ -186,7 +188,7 @@ const EcotaxistaSignUp = () => {
       <CustomModal
         visible={alertModalVisible}
         onClose={() => setAlertModalVisible(false)}
-        message="Preencha todos os campos!"
+        message={t("Preencha todos os campos!")}
         showInput={false}
         inputValue={inputValue}
         setInputValue={setInputValue}
@@ -197,14 +199,14 @@ const EcotaxistaSignUp = () => {
       <CustomModal
         visible={loginModalVisible}
         onClose={() => setLoginModalVisible(false)}
-        message="Cadastro efetuado com sucesso, deseja seguir para a página de login?"
+        message={t("Cadastro efetuado com sucesso, deseja seguir para a página de login?")}
         showInput={false}
         inputValue={inputValue}
         setInputValue={setInputValue}
         onConfirm={() => {
           router.navigate("/(auth)/logIn/ecomorador/page");
         }}
-        confirmButtonText="Ir para Login"
+        confirmButtonText={t("Ir para Login")}
       />
     </KeyboardAvoidingView>
   );

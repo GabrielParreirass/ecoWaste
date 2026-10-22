@@ -1,3 +1,4 @@
+import { useLanguage } from "../contexts/LanguageContext";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable } from "react-native";
@@ -6,6 +7,7 @@ import { Image } from "react-native";
 import { useState } from "react";
 
 const Index = () => {
+  const { t } = useLanguage();
 
   
 
@@ -22,7 +24,7 @@ const Index = () => {
           source={require("../assets/images/logo.png")}
           style={styles.logo}
         />
-        <Text style={styles.title}>Conectando você a um mundo sustentável</Text>
+        <Text style={styles.title}>{t("Conectando você a um mundo sustentável")}</Text>
         <Image
           source={require("../assets/images/imgHome.png")}
           style={styles.imgHome}
@@ -32,7 +34,7 @@ const Index = () => {
             style={styles.button}
             onPress={() => router.navigate("/(auth)/logIn/page")}
           >
-            <Text style={styles.textButton}>LogIn</Text>
+            <Text style={styles.textButton}>{t("LogIn")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -41,7 +43,7 @@ const Index = () => {
             onPress={() => router.navigate("/(auth)/signUp/page")}
             
           >
-            <Text style={styles.textButton}>Cadastro</Text>
+            <Text style={styles.textButton}>{t("Cadastro")}</Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>

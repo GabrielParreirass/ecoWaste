@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import { View, Text, Pressable, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from "react-native";
 import React from "react";
 import PageTop from "../../../../components/PageTop";
@@ -6,13 +7,14 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 
 const HomeEcotaxista = () => {
+  const { t } = useLanguage();
   const { onLogout } = useAuth();
 
   return (
     <SafeAreaView style={{flex:1}}>
       <ScrollView>
         <PageTop profile={true} />
-        <Text style={styles.title}>Bem-vindo a sua central de serviços</Text>
+        <Text style={styles.title}>{t("Bem-vindo a sua central de serviços")}</Text>
         <View style={styles.containerCards}>
           <TouchableOpacity
             style={styles.card}
@@ -22,7 +24,7 @@ const HomeEcotaxista = () => {
             }
           >
             <FontAwesome5 name="map-marked-alt" size={60} color="white" />
-            <Text style={styles.textCard}>Resíduos disponíveis</Text>
+            <Text style={styles.textCard}>{t("Resíduos disponíveis")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
@@ -32,7 +34,7 @@ const HomeEcotaxista = () => {
             }
           >
             <FontAwesome5 name="calendar-check" size={60} color="white" />
-            <Text style={styles.textCard}>Reservas</Text>
+            <Text style={styles.textCard}>{t("Reservas")}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.containerCards}>
@@ -44,7 +46,7 @@ const HomeEcotaxista = () => {
             }
           >
             <FontAwesome5 name="wallet" size={60} color="white" />
-            <Text style={styles.textCard}>Eco Coins</Text>
+            <Text style={styles.textCard}>{t("Eco Coins")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
@@ -54,12 +56,12 @@ const HomeEcotaxista = () => {
             }
           >
             <FontAwesome5 name="medal" size={55} color="white" />
-            <Text style={styles.textCard}>Benefícios</Text>
+            <Text style={styles.textCard}>{t("Benefícios")}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.containerButton}>
           <TouchableOpacity style={styles.button} onPress={() => onLogout!()}>
-            <Text style={styles.textButton}>Sair</Text>
+            <Text style={styles.textButton}>{t("Sair")}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

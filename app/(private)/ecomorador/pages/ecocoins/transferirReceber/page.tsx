@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -10,6 +11,7 @@ import { router } from "expo-router";
 import DefaultButton from "../../../../../components/DefaultButton";
 
 const TransferirReceber = () => {
+  const { t } = useLanguage();
   return (
     
     <SafeAreaView>
@@ -21,7 +23,7 @@ const TransferirReceber = () => {
           </View>
         </View>
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>CÂMBIO: 1 ECO COIN = R$0,50</Text>
+          <Text style={styles.title}>{t("CÂMBIO: 1 ECO COIN = R$0,50")}</Text>
         </View>
         <View style={styles.containerBtns}>
           <TouchableOpacity
@@ -39,7 +41,7 @@ const TransferirReceber = () => {
               style={styles.button}
             >
               <FontAwesome5 name="money-bill-alt" size={80} color="white" />
-              <Text style={styles.textButton}>PAGAR</Text>
+              <Text style={styles.textButton}>{t("PAGAR")}</Text>
             </LinearGradient>
           </TouchableOpacity>
           <TouchableOpacity
@@ -57,7 +59,7 @@ const TransferirReceber = () => {
               style={styles.button}
             >
               <MaterialIcons name="payments" size={80} color="white" />
-              <Text style={styles.textButton}>RECEBER</Text>
+              <Text style={styles.textButton}>{t("RECEBER")}</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -77,12 +79,12 @@ const TransferirReceber = () => {
               style={styles.button}
             >
               <MaterialCommunityIcons name="bank" size={80} color="white" />
-              <Text style={styles.textButton}>EXTRATO</Text>
+              <Text style={styles.textButton}>{t("EXTRATO")}</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
         <View style={styles.containerDefaultButton}>
-          <DefaultButton text={"Sair"} onPressButton={() => router.back()} />
+          <DefaultButton text={t("Sair")} onPressButton={() => router.back()} />
         </View>
       </ScrollView>
     </SafeAreaView>

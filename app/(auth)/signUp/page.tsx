@@ -1,16 +1,17 @@
+import { useLanguage } from "../../../contexts/LanguageContext";
 import { StyleSheet, Text, View } from "react-native";
-import React, { Component } from "react";
+import React from "react";
 import PageTop from "../../components/PageTop";
 import { Image } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 
-export class SingUp extends Component {
-  render() {
+export function SingUp() {
+  const { t } = useLanguage();
     return (
       <View>
         <PageTop />
-        <Text style={styles.pageTitle}>Olá, você quer:</Text>
+        <Text style={styles.pageTitle}>{t("Olá, você quer:")}</Text>
         <View>
           <View style={styles.containerEcomorador}>
             <Image
@@ -18,7 +19,7 @@ export class SingUp extends Component {
               style={styles.imgEcomorador}
             />
             <View style={{ display: "flex", justifyContent: "space-between" }}>
-              <Text style={styles.descEcomorador}>Reciclar meus resíduos</Text>
+              <Text style={styles.descEcomorador}>{t("Reciclar meus resíduos")}</Text>
               <View
                 style={{
                   display: "flex",
@@ -29,7 +30,7 @@ export class SingUp extends Component {
               >
                 <View style={styles.connectorLine}></View>
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.navigate("/(auth)/signUp/ecomorador/page")}>
-                  <Text style={styles.titleEcomorador}>ECOMORADOR</Text>
+                  <Text style={styles.titleEcomorador}>{t("ECOMORADOR")}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -40,9 +41,7 @@ export class SingUp extends Component {
               style={styles.imgEcomorador}
             />
             <View style={{ display: "flex", justifyContent: "space-between" }}>
-              <Text style={styles.descEcotaxista}>
-                Coletar resíduos recicláveis
-              </Text>
+              <Text style={styles.descEcotaxista}>{t("Coletar resíduos recicláveis")}</Text>
               <View
                 style={{
                   display: "flex",
@@ -52,7 +51,7 @@ export class SingUp extends Component {
                 }}
               >
                 <TouchableOpacity activeOpacity={0.7} onPress={()=> router.navigate("/(auth)/signUp/ecotaxista/page")}>
-                  <Text style={styles.titleEcotaxista}>ECOTAXISTA</Text>
+                  <Text style={styles.titleEcotaxista}>{t("ECOTAXISTA")}</Text>
                 </TouchableOpacity>
                 <View style={styles.connectorLineEcotaxista}></View>
               </View>
@@ -61,7 +60,6 @@ export class SingUp extends Component {
         </View>
       </View>
     );
-  }
 }
 
 export default SingUp;

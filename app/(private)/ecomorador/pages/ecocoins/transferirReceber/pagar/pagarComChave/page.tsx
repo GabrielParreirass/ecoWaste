@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import PageTop from "../../../../../../../components/PageTop";
@@ -19,12 +20,13 @@ interface typePaymentKey {
 }
 
 const PagarComChave = () => {
+  const { t } = useLanguage();
   const [modalConfirmDataVisible, setModalConfirmDataVisible] = useState(false);
   const [paymentKeys, setPaymentKeys] = useState([]);
   const [valorPagamento, setValorPagamento] = useState("");
   const [emailDestinatario, setEmailDestinatario] = useState("");
   const [idKey, setIdKey] = useState("");
-  const [fraseModal, setFraseModal] = useState("");
+  const [fraseModal, setFraseModal] = useState<import("../../../../../../../../i18n/translate").Message>("");
   const API_URL = apiUrl.apiUrl;
   const client = useRef<MqttClient | null>(null);
   const requestId = useRef(Date.now().toString());
@@ -76,7 +78,7 @@ const PagarComChave = () => {
             (chave: any) => chave.id !== idKey
           );
           setPaymentKeys(chavesAtualizadas);
-          window.alert(formatedData.message)
+          window.alert(t(formatedData.message))
         }
       }
     });
@@ -111,9 +113,7 @@ const PagarComChave = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          VOCÊ TEM OS SEGUINTES CÓDIGOS-CHAVE PENDENTES, SELECIONE UM E PAGUE:
-        </Text>
+        <Text style={styles.title}>{t("VOCÊ TEM OS SEGUINTES CÓDIGOS-CHAVE PENDENTES, SELECIONE UM E PAGUE:")}</Text>
       </View>
 
       {paymentKeys.length > 0 ? (
@@ -123,7 +123,7 @@ const PagarComChave = () => {
               onPress={() => {
                 setModalConfirmDataVisible(true);
                 setFraseModal(
-                  `Informações da chave de pagamento: \nDestinatario: ${i.recebedor} \nValor: E$${i.valor},00 \nConfirme para realizar o pagamento.`
+                  { key: "Informações da chave de pagamento: \nDestinatario: {{recipient}} \nValor: E${{amount}},00 \nConfirme para realizar o pagamento.", values: { recipient: i.recebedor, amount: i.valor } }
                 );
                 setEmailDestinatario(i.recebedor);
                 setValorPagamento(i.valor);
@@ -140,14 +140,12 @@ const PagarComChave = () => {
         </View>
       ) : (
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>
-            Você não possui nenhuma chave de pagamento pendente.
-          </Text>
+          <Text style={styles.title}>{t("Você não possui nenhuma chave de pagamento pendente.")}</Text>
         </View>
       )}
 
       <View style={styles.containerButton}>
-        <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
       </View>
 
       <CustomModal
@@ -159,7 +157,7 @@ const PagarComChave = () => {
           handlePagamento();
           setModalConfirmDataVisible(false);
         }}
-        confirmButtonText="Confirmar"
+        confirmButtonText={t("Confirmar")}
       />
     </ScrollView>
   );

@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import PageTop from "../../../../../../components/PageTop";
@@ -10,7 +11,8 @@ import mqtt, { MqttClient } from "mqtt";
 import apiUrl from "../../../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
-const Extrato = () => {;
+const Extrato = () => {
+  const { t } = useLanguage();;
   const [showSaldoEcoCoin, setShowSaldoEcoCoin] = useState(false);
   const [showPagamentos, setShowPagamentos] = useState(false);
   const [showRecebimentos, setShowRecebimentos] = useState(false);
@@ -78,7 +80,7 @@ const Extrato = () => {;
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>CLIQUE PARA VER SUAS TRANSAÇÕES</Text>
+        <Text style={styles.title}>{t("CLIQUE PARA VER SUAS TRANSAÇÕES")}</Text>
       </View>
 
       {showDefaultScreen ? (
@@ -92,7 +94,7 @@ const Extrato = () => {;
               style={styles.key}
             >
               <View>
-                <Text style={styles.textKeys}>Ver meus pagamentos</Text>
+                <Text style={styles.textKeys}>{t("Ver meus pagamentos")}</Text>
               </View>
             </Pressable>
             <Pressable
@@ -103,7 +105,7 @@ const Extrato = () => {;
               style={styles.key}
             >
               <View>
-                <Text style={styles.textKeys}>Ver pagamentos recebidos</Text>
+                <Text style={styles.textKeys}>{t("Ver pagamentos recebidos")}</Text>
               </View>
             </Pressable>
             <Pressable
@@ -114,14 +116,14 @@ const Extrato = () => {;
               style={styles.key}
             >
               <View>
-                <Text style={styles.textKeys}>Ver meu saldo de EcoCoins</Text>
+                <Text style={styles.textKeys}>{t("Ver meu saldo de EcoCoins")}</Text>
               </View>
             </Pressable>
           </View>
 
           <View style={styles.containerButton}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => router.back()}
             />
           </View>
@@ -133,31 +135,28 @@ const Extrato = () => {;
       {showPagamentos ? (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>SEUS PAGAMENTOS:</Text>
+            <Text style={styles.title}>{t("SEUS PAGAMENTOS:")}</Text>
           </View>
 
           {pagamentos.length > 0 ? (
             <View>
               {pagamentos.map((i: any, index) => (
                 <View key={index} style={styles.containerInfos}>
-                  <Text style={styles.textInfos}>
-                    QUEM RECEBEU: {i.partner}
+                  <Text style={styles.textInfos}>{t("QUEM RECEBEU: ")}{i.partner}
                   </Text>
-                  <Text style={styles.textInfos}>VALOR: E${i.value},00</Text>
+                  <Text style={styles.textInfos}>{t("VALOR: E$")}{i.value}{t(",00")}</Text>
                 </View>
               ))}
             </View>
           ) : (
             <View>
-              <Text style={styles.title}>
-                Você não possui nenhum pagamento.
-              </Text>
+              <Text style={styles.title}>{t("Você não possui nenhum pagamento.")}</Text>
             </View>
           )}
 
           <View style={styles.containerButton}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => {
                 setShowPagamentos(!showPagamentos);
                 setShowDefaultScreen(!showDefaultScreen);
@@ -172,29 +171,27 @@ const Extrato = () => {;
       {showRecebimentos ? (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>SEUS RECEBIMENTOS:</Text>
+            <Text style={styles.title}>{t("SEUS RECEBIMENTOS:")}</Text>
           </View>
 
           {recebimentos.length > 0 ? (
             <View>
               {recebimentos.map((i: any, index) => (
                 <View key={index} style={styles.containerInfos}>
-                  <Text style={styles.textInfos}>Pagador: {i.partner}</Text>
-                  <Text style={styles.textInfos}>Valor: E${i.value},00</Text>
+                  <Text style={styles.textInfos}>{t("Pagador: ")}{i.partner}</Text>
+                  <Text style={styles.textInfos}>{t("Valor: E$")}{i.value}{t(",00")}</Text>
                 </View>
               ))}
             </View>
           ) : (
             <View>
-              <Text style={styles.title}>
-                Você não possui nenhum recebimento
-              </Text>
+              <Text style={styles.title}>{t("Você não possui nenhum recebimento")}</Text>
             </View>
           )}
 
           <View style={styles.containerButton}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => {
                 setShowRecebimentos(!showRecebimentos);
                 setShowDefaultScreen(!showDefaultScreen);
@@ -209,14 +206,14 @@ const Extrato = () => {;
       {showSaldoEcoCoin ? (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>SEU SALDO DE ECOCOINS É:</Text>
+            <Text style={styles.title}>{t("SEU SALDO DE ECOCOINS É:")}</Text>
           </View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>E${saldoEcoCoins},00</Text>
+            <Text style={styles.title}>{t("E$")}{saldoEcoCoins}{t(",00")}</Text>
           </View>
           <View style={styles.containerButton}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => {
                 setShowSaldoEcoCoin(!showSaldoEcoCoin);
                 setShowDefaultScreen(!showDefaultScreen);

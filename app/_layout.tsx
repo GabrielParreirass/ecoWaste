@@ -2,16 +2,30 @@ import { router, Stack } from "expo-router";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
 import { useSegments, usePathname } from "expo-router";
+import { View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { LanguageProvider, useLanguage } from "../contexts/LanguageContext";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <MainLayout />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <View style={{ flex: 1 }}>
+            <SafeAreaView edges={["top", "left", "right"]} style={{ flex: 1, backgroundColor: "#fff" }}>
+              <MainLayout />
+            </SafeAreaView>
+            <LanguageSwitcher />
+          </View>
+        </AuthProvider>
+      </LanguageProvider>
+    </SafeAreaProvider>
   );
 }
 
 function MainLayout() {
+  const { t } = useLanguage();
   const { authState } = useAuth();
   const segments = useSegments();
   const pathname = usePathname();
@@ -124,31 +138,31 @@ function MainLayout() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
             name="(auth)/signUp/page"
-            options={{ headerShown: false, title: "Cadastro" }}
+            options={{ headerShown: false, title: t("Cadastro") }}
           />
           <Stack.Screen
             name="(auth)/signUp/ecomorador/page"
-            options={{ headerShown: false, title: "Cadastro" }}
+            options={{ headerShown: false, title: t("Cadastro") }}
           />
           <Stack.Screen
             name="(auth)/signUp/ecomorador/telaEcolixeira"
-            options={{ headerShown: false, title: "Tela ecolixeira" }}
+            options={{ headerShown: false, title: t("Tela ecolixeira") }}
           />
           <Stack.Screen
             name="(auth)/signUp/ecotaxista/page"
-            options={{ headerShown: false, title: "Login" }}
+            options={{ headerShown: false, title: t("Login") }}
           />
           <Stack.Screen
             name="(auth)/logIn/page"
-            options={{ headerShown: false, title: "Login" }}
+            options={{ headerShown: false, title: t("Login") }}
           />
           <Stack.Screen
             name="(auth)/logIn/ecomorador/page"
-            options={{ headerShown: false, title: "Login" }}
+            options={{ headerShown: false, title: t("Login") }}
           />
           <Stack.Screen
             name="(auth)/logIn/ecotaxista/page"
-            options={{ headerShown: false, title: "Login" }}
+            options={{ headerShown: false, title: t("Login") }}
           />
 
         </Stack>

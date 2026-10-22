@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import PageTop from "../../../../components/PageTop";
@@ -10,6 +11,7 @@ import apiUrl from "../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const HomeEcomorador = () => {
+  const { t } = useLanguage();
   const { onLogout, authState } = useAuth();
   const [temLixeira, setTemLixeira] = useState(true);
   const [coletas, setColetas] = useState([]);
@@ -57,15 +59,14 @@ const HomeEcomorador = () => {
   return (
     <ScrollView>
       <PageTop profile={true} />
-      <Text style={styles.title}>Bem-vindo a sua central de serviços</Text>
+      <Text style={styles.title}>{t("Bem-vindo a sua central de serviços")}</Text>
       <View style={styles.containerCards}>
         {temLixeira ? (
           <View>
             <TouchableOpacity activeOpacity={0.7} style={styles.card}>
               <Entypo name="trash" size={60} color="white" />
               <Text style={styles.textCard}>
-                {coletas.length} Coleta(s) em espera
-              </Text>
+                {coletas.length}{t(" Coleta(s) em espera")}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -79,7 +80,7 @@ const HomeEcomorador = () => {
               }
             >
               <Entypo name="trash" size={60} color="white" />
-              <Text style={styles.textCard}>Solicitar coleta</Text>
+              <Text style={styles.textCard}>{t("Solicitar coleta")}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -92,7 +93,7 @@ const HomeEcomorador = () => {
           }
         >
           <Entypo name="wallet" size={60} color="white" />
-          <Text style={styles.textCard}>Eco coins</Text>
+          <Text style={styles.textCard}>{t("Eco coins")}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.containerCards}>
@@ -104,7 +105,7 @@ const HomeEcomorador = () => {
           }
         >
           <FontAwesome5 name="tools" size={55} color="white" />
-          <Text style={styles.textCard}>Manutenção</Text>
+          <Text style={styles.textCard}>{t("Manutenção")}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.card}
@@ -114,12 +115,12 @@ const HomeEcomorador = () => {
           }
         >
           <FontAwesome5 name="medal" size={55} color="white" />
-          <Text style={styles.textCard}>Benefícios</Text>
+          <Text style={styles.textCard}>{t("Benefícios")}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.containerButton}>
         <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={() => onLogout!()}>
-          <Text style={styles.textButton}>Sair</Text>
+          <Text style={styles.textButton}>{t("Sair")}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

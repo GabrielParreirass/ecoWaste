@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import { View, StyleSheet, ScrollView } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import PageTop from "../../../../../components/PageTop";
@@ -15,6 +16,7 @@ import { LocationObjectCoords } from "expo-location";
 import { createMqttOptions } from "../../../../../utils/mqttOptions";
 
 const NovaColeta = () => {
+  const { t } = useLanguage();
   const [progression, setProgression] = useState("1");
   const [tipo, setTipo] = useState("");
   const [peso, setPeso] = useState("");
@@ -56,7 +58,7 @@ const NovaColeta = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedMessage = JSON.parse(message.toString());
-      alert(formatedMessage.message);
+      alert(t(formatedMessage.message));
     });
 
     (async () => {
@@ -82,7 +84,7 @@ const NovaColeta = () => {
       // 1. Confere se a permissão foi concedida
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        alert("Precisamos da permissão de localização para agendar a coleta!");
+        alert(t("Precisamos da permissão de localização para agendar a coleta!"));
         return; // Interrompe o envio se não tiver permissão
       }
 
@@ -124,7 +126,7 @@ const NovaColeta = () => {
 
     } catch (error) {
       console.error("Erro ao pegar localização ou enviar coleta:", error);
-      alert("Erro ao tentar agendar. Verifique seu GPS e tente novamente.");
+      alert(t("Erro ao tentar agendar. Verifique seu GPS e tente novamente."));
     }
   };
   return (

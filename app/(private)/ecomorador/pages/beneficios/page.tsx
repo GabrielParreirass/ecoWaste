@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import PageTop from "../../../../components/PageTop";
@@ -9,6 +10,7 @@ import { router } from "expo-router";
 import DefaultButton from "../../../../components/DefaultButton";
 
 const Beneficios = () => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <PageTop profile={false} />
@@ -18,9 +20,7 @@ const Beneficios = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Aqui você recilca e tem vantagens, confira seus benefícios:
-        </Text>
+        <Text style={styles.title}>{t("Aqui você recilca e tem vantagens, confira seus benefícios:")}</Text>
       </View>
       <View style={styles.containerBtns}>
         <TouchableOpacity
@@ -36,7 +36,7 @@ const Beneficios = () => {
             style={styles.button}
           >
             <FontAwesome6 name="house-chimney" size={80} color="white" />
-            <Text style={styles.textButton}>Desconto no IPTU</Text>
+            <Text style={styles.textButton}>{t("Desconto no IPTU")}</Text>
           </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity
@@ -54,13 +54,13 @@ const Beneficios = () => {
             style={styles.button}
           >
             <Foundation name="shopping-cart" size={80} color="white" />
-            <Text style={styles.textButton}>Descontos no supermercado</Text>
+            <Text style={styles.textButton}>{t("Descontos no supermercado")}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
 
       <View style={{ width: "70%", margin: "auto" }}>
-        <DefaultButton text={"Voltar"} onPressButton={()=> router.back()}/>
+        <DefaultButton text={t("Voltar")} onPressButton={()=> router.back()}/>
       </View>
     </ScrollView>
   );

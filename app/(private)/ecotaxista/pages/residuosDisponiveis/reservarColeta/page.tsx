@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -13,6 +14,7 @@ import DefaultButton from "../../../../../components/DefaultButton";
 import { router } from "expo-router";
 
 const ReservarColetas = () => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <PageTop profile={false} />
@@ -22,13 +24,11 @@ const ReservarColetas = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Selecione da lista ou pesquise pelo código.
-        </Text>
+        <Text style={styles.title}>{t("Selecione da lista ou pesquise pelo código.")}</Text>
       </View>
 
       <View style={styles.containerInput}>
-        <TextInput style={styles.input} placeholder="Pesquisar código" />
+        <TextInput style={styles.input} placeholder={t("Pesquisar código")} />
         <Pressable style={styles.btnInput}>
           <FontAwesome5 name="search" size={24} color="white" />
         </Pressable>
@@ -37,23 +37,23 @@ const ReservarColetas = () => {
       <View style={styles.containerKeys}>
         <Pressable style={styles.key}>
           <View>
-            <Text style={styles.textKeys}>Papel: 2kg</Text>
+            <Text style={styles.textKeys}>{t("Papel: 2kg")}</Text>
           </View>
         </Pressable>
         <Pressable style={styles.key}>
           <View>
-            <Text style={styles.textKeys}>Papel: 2kg</Text>
+            <Text style={styles.textKeys}>{t("Papel: 2kg")}</Text>
           </View>
         </Pressable>
         <Pressable style={styles.key}>
           <View>
-            <Text style={styles.textKeys}>Papel: 2kg</Text>
+            <Text style={styles.textKeys}>{t("Papel: 2kg")}</Text>
           </View>
         </Pressable>
       </View>
 
       <View style={{ width: "70%", margin: "auto", paddingTop: 10 }}>
-        <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
       </View>
     </ScrollView>
   );

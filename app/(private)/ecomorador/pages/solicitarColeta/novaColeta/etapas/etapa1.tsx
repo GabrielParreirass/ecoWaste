@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import React, { useState } from "react";
 import CardNovaColeta from "../../../../../../components/CardNovaColeta";
@@ -6,30 +7,29 @@ import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa1 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <View>
-        <Text style={styles.title}>
-          Vamos realizar sua solicitação de coleta, o que deseja reciclar?
-        </Text>
+        <Text style={styles.title}>{t("Vamos realizar sua solicitação de coleta, o que deseja reciclar?")}</Text>
       </View>
       <View style={styles.mainContainerCards}>
         <View style={styles.subContainerCards}>
-          <CardNovaColeta text="Papel" background="blue" onPressCard={() => onConfirm!("Papel")} />
-          <CardNovaColeta text="Metal" background="#ffb800" onPressCard={() => onConfirm!("Metal")}/>
+          <CardNovaColeta text={t("Papel")} background="blue" onPressCard={() => onConfirm!("Papel")} />
+          <CardNovaColeta text={t("Metal")} background="#ffb800" onPressCard={() => onConfirm!("Metal")}/>
         </View>
         <View style={styles.subContainerCards}>
-          <CardNovaColeta text="Plástico" background="red" onPressCard={() => onConfirm!("Plastico")}/>
-          <CardNovaColeta text="Orgânicos" background="brown" onPressCard={() => onConfirm!("Organico")} />
+          <CardNovaColeta text={t("Plástico")} background="red" onPressCard={() => onConfirm!("Plastico")}/>
+          <CardNovaColeta text={t("Orgânicos")} background="brown" onPressCard={() => onConfirm!("Organico")} />
         </View>
         <View style={styles.subContainerCards}>
-          <CardNovaColeta text="Vidro" background="green" onPressCard={() => onConfirm!("Vidro")} />
-          <CardNovaColeta text="Entulhos" background="gray" onPressCard={() => onConfirm!("Entulhos")} />
+          <CardNovaColeta text={t("Vidro")} background="green" onPressCard={() => onConfirm!("Vidro")} />
+          <CardNovaColeta text={t("Entulhos")} background="gray" onPressCard={() => onConfirm!("Entulhos")} />
         </View>
       </View>
 
       <View style={{marginTop:20, marginBottom:20, width:'50%', margin:"auto"}}>
-        <DefaultButton text={"Cancelar"} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/page")}/>
+        <DefaultButton text={t("Cancelar")} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/page")}/>
       </View>
     </ScrollView>
   );

@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import PageTop from "../../../../components/PageTop";
@@ -14,6 +15,7 @@ import apiUrl from "../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const Manutencao = () => {
+  const { t } = useLanguage();
   const [modalVisible, setmodalVisible] = useState(false);
   const { authState } = useAuth();
   const userEmail = authState?.loggedEmail;
@@ -44,7 +46,7 @@ const Manutencao = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedData = JSON.parse(message.toString());
-      window.alert(formatedData.message);
+      window.alert(t(formatedData.message));
     });
   }, []);
 
@@ -66,10 +68,7 @@ const Manutencao = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Problemas com sua lixeira? Não se preocupe, vamo te ajudar! Informe
-          módulo com mal funcionamento:
-        </Text>
+        <Text style={styles.title}>{t("Problemas com sua lixeira? Não se preocupe, vamo te ajudar! Informe módulo com mal funcionamento:")}</Text>
       </View>
       <View style={styles.containerTopTrash}>
         <Pressable
@@ -80,7 +79,7 @@ const Manutencao = () => {
           }}
         >
           <FontAwesome6 name="trash" size={70} color="blue" />
-          <Text style={styles.textCard}>Papel</Text>
+          <Text style={styles.textCard}>{t("Papel")}</Text>
         </Pressable>
         <Pressable
           style={styles.cardTrash}
@@ -90,7 +89,7 @@ const Manutencao = () => {
           }}
         >
           <FontAwesome6 name="trash" size={70} color="red" />
-          <Text style={styles.textCard}>Plástico</Text>
+          <Text style={styles.textCard}>{t("Plástico")}</Text>
         </Pressable>
         <Pressable
           style={styles.cardTrash}
@@ -100,7 +99,7 @@ const Manutencao = () => {
           }}
         >
           <FontAwesome6 name="trash" size={70} color="green" />
-          <Text style={styles.textCard}>Vidro</Text>
+          <Text style={styles.textCard}>{t("Vidro")}</Text>
         </Pressable>
         <Pressable
           style={styles.cardTrash}
@@ -110,7 +109,7 @@ const Manutencao = () => {
           }}
         >
           <FontAwesome6 name="trash" size={70} color="#ffb800" />
-          <Text style={styles.textCard}>Metal</Text>
+          <Text style={styles.textCard}>{t("Metal")}</Text>
         </Pressable>
       </View>
       <View style={styles.containerTopTrash}>
@@ -122,23 +121,23 @@ const Manutencao = () => {
           }}
         >
           <Fontisto name="recycle" size={70} color="black" />
-          <Text style={styles.textCard}>TODOS</Text>
+          <Text style={styles.textCard}>{t("TODOS")}</Text>
         </Pressable>
       </View>
 
       <View style={{ width: "70%", margin: "auto", padding: 10 }}>
-        <DefaultButton text={"Voltar"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={() => router.back()} />
       </View>
 
       <CustomModal
         visible={modalVisible}
         onClose={() => setmodalVisible(false)}
-        message="Recebemos sua solicitação e em breve entraremos em contato para agenda um atendimento!"
+        message={t("Recebemos sua solicitação e em breve entraremos em contato para agenda um atendimento!")}
         showInput={false}
         onConfirm={() => {
           setmodalVisible(false);
         }}
-        confirmButtonText="Confirmar"
+        confirmButtonText={t("Confirmar")}
       />
     </ScrollView>
   );

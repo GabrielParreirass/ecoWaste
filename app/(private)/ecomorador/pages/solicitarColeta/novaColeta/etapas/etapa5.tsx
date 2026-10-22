@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -12,25 +13,22 @@ import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa5 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <View>
-        <Text style={styles.title}>
-          Agora só basta confirmar sua solicitação para que os coletores possam vê-la!
-        </Text>
+        <Text style={styles.title}>{t("Agora só basta confirmar sua solicitação para que os coletores possam vê-la!")}</Text>
         <View style={{margin:"auto"}}>
             <Image
               source={require("../../../../../../../assets/images/imgHome.png")}
               style={styles.logo}
             />
         </View>
-        <Text style={styles.title}>
-          Assim que ela for selecionada para coleta, você receberá uma aviso!
-        </Text>
+        <Text style={styles.title}>{t("Assim que ela for selecionada para coleta, você receberá uma aviso!")}</Text>
       </View>
       <View style={styles.containerButtons}>
-        <DefaultButton text={"Confirmar"} onPressButton={() => onConfirm!("")}/>
-        <DefaultButton text={"Ver solicitações"} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/coletasEmEspera/page")}/>
+        <DefaultButton text={t("Confirmar")} onPressButton={() => onConfirm!("")}/>
+        <DefaultButton text={t("Ver solicitações")} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/coletasEmEspera/page")}/>
       </View>
     </ScrollView>
   );

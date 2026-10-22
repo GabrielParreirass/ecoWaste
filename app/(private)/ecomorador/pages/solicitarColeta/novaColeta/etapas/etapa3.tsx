@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import React, { useState } from "react";
 import DefaultButton from "../../../../../../components/DefaultButton";
@@ -5,42 +6,43 @@ import EtapasProps from "../../../../../../../types/EtapasProps";
 import { router } from "expo-router";
 
 const Etapa3 = ({inputValue, setInputValue, onConfirm}: EtapasProps) => {
+  const { t } = useLanguage();
   return (
     <ScrollView>
       <View>
-        <Text style={styles.title}>Informe o dia da semana</Text>
+        <Text style={styles.title}>{t("Informe o dia da semana")}</Text>
       </View>
       <View style={styles.containerCards}>
         <View style={styles.subContainerCards}>
           <Pressable style={styles.card} onPress={()=>onConfirm!("Doming")}>
-            <Text style={styles.textCard}>Dom</Text>
+            <Text style={styles.textCard}>{t("Dom")}</Text>
           </Pressable>
           <Pressable style={styles.card} onPress={()=>onConfirm!("Segunda-feira")}>
-            <Text style={styles.textCard}>Seg</Text>
+            <Text style={styles.textCard}>{t("Seg")}</Text>
           </Pressable>
           <Pressable style={styles.card} onPress={()=>onConfirm!("Terça-feira")}>
-            <Text style={styles.textCard}>Ter</Text>
+            <Text style={styles.textCard}>{t("Ter")}</Text>
           </Pressable>
         </View>
         <View style={styles.subContainerCards}>
           <Pressable style={styles.card } onPress={()=>onConfirm!("Quarta-feira")}>
-            <Text style={styles.textCard}>Qua</Text>
+            <Text style={styles.textCard}>{t("Qua")}</Text>
           </Pressable>
           <Pressable style={styles.card} onPress={()=>onConfirm!("Quinta-feira")}>
-            <Text style={styles.textCard}>Qui</Text>
+            <Text style={styles.textCard}>{t("Qui")}</Text>
           </Pressable>
           <Pressable style={styles.card} onPress={()=>onConfirm!("Sexta-feira")}>
-            <Text style={styles.textCard}>Sex</Text>
+            <Text style={styles.textCard}>{t("Sex")}</Text>
           </Pressable>
         </View>
         <View>
           <Pressable style={styles.card} onPress={()=>onConfirm!("Sabado")}>
-            <Text style={styles.textCard}>Sab</Text>
+            <Text style={styles.textCard}>{t("Sab")}</Text>
           </Pressable>
         </View>
       </View>
       <View style={{marginTop:20, width:'50%', margin:"auto"}}>
-        <DefaultButton text={"Cancelar"} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/page")}/>
+        <DefaultButton text={t("Cancelar")} onPressButton={()=> router.replace("/(private)/ecomorador/pages/solicitarColeta/page")}/>
       </View>
     </ScrollView>
   );

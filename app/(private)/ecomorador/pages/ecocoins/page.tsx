@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import PageTop from "../../../../components/PageTop";
@@ -13,6 +14,7 @@ import apiUrl from "../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const EcoCoins = () => {
+  const { t } = useLanguage();
   const [saldoEcoCoins, setSaldoEcoCoins] = useState("");
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
@@ -63,13 +65,10 @@ const EcoCoins = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Vai um dinheirinho ai!? Aqui seus resíduos valem ouro, ou melhor,
-          ecocoins! Veja seu saldo, faça pagamentos para amigos e muito mais.
-        </Text>
+        <Text style={styles.title}>{t("Vai um dinheirinho ai!? Aqui seus resíduos valem ouro, ou melhor, ecocoins! Veja seu saldo, faça pagamentos para amigos e muito mais.")}</Text>
       </View>
       <View style={styles.containerSaldo}>
-        <Text style={styles.saldo}>Saldo atual (E$): {saldoEcoCoins},00</Text>
+        <Text style={styles.saldo}>{t("Saldo atual (E$): ")}{saldoEcoCoins}{t(",00")}</Text>
       </View>
       <View style={styles.containerBtns}>
         <TouchableOpacity
@@ -87,7 +86,7 @@ const EcoCoins = () => {
             style={styles.button}
           >
             <FontAwesome6 name="money-bill-transfer" size={80} color="white" />
-            <Text style={styles.textButton}>Transferir / Receber</Text>
+            <Text style={styles.textButton}>{t("Transferir / Receber")}</Text>
           </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity
@@ -105,12 +104,12 @@ const EcoCoins = () => {
             style={styles.button}
           >
             <FontAwesome5 name="hand-holding-heart" size={80} color="white" />
-            <Text style={styles.textButton}>Apoiar Boas Causas</Text>
+            <Text style={styles.textButton}>{t("Apoiar Boas Causas")}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
       <View style={styles.containerDefaultButton}>
-        <DefaultButton text={"sair"} onPressButton={() => router.back()} />
+        <DefaultButton text={t("sair")} onPressButton={() => router.back()} />
       </View>
     </ScrollView>
   );

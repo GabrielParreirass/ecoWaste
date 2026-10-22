@@ -5,6 +5,7 @@ import apiUrl from "../app/utils/api_url.json";
 import { router } from "expo-router";
 import mqtt, { MqttClient } from "mqtt";
 import { createMqttOptions } from "../app/utils/mqttOptions";
+import { useLanguage } from "./LanguageContext";
 
 interface AuthProps {
   authState?: {
@@ -33,6 +34,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useLanguage();
   const [authState, setAuthState] = useState<{
     token: string | null;
     authenticated: boolean | null;
@@ -68,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const timeout = setTimeout(() => {
         client.current?.removeListener("connect", handleConnect);
         client.current?.removeListener("error", handleError);
-        reject(new Error(`Tempo esgotado ao conectar ao broker MQTT em ${API_URL}`));
+        reject(new Error(t("Tempo esgotado ao conectar ao broker MQTT em {{address}}", { address: API_URL })));
       }, 10000);
 
       client.current?.once("connect", handleConnect);
@@ -159,7 +161,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         resolve({
           verified: false,
           create: false,
-          message: "O servidor não respondeu. Verifique o broker MQTT e tente novamente.",
+          message: t("O servidor não respondeu. Verifique o broker MQTT e tente novamente."),
         });
       }, 10000);
 
@@ -237,7 +239,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       return true;
     } else {
-      alert("Falha ao verificar o código inserido");
+      alert(t("Falha ao verificar o código inserido"));
       return false;
     }
   };
@@ -248,7 +250,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     await waitForConnection();
     if (!client.current?.connected) {
-      throw new Error(`Cliente MQTT não está conectado em ${API_URL}.`);
+      throw new Error(t("Cliente MQTT não está conectado em {{address}}.", { address: API_URL }));
     }
 
     const resultPromise = waitForResponse(topicResponse);

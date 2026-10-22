@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../contexts/LanguageContext";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import React from "react";
 import PageTop from "../../../../../components/PageTop";
@@ -8,6 +9,7 @@ import CustomModal from "../../../../../components/popUps/CustomModal";
 import { router } from "expo-router";
 
 const DescontoIptu = () => {
+  const { t } = useLanguage();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmEmailVisible, setModalConfirmEmailVisible] =
     useState(false);
@@ -21,24 +23,18 @@ const DescontoIptu = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>Desconto na próxima cobrança: R$100,00</Text>
+        <Text style={styles.title}>{t("Desconto na próxima cobrança: R$100,00")}</Text>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          O seu saldo atual sera usado para gerar desconto no pagamento do seu
-          próximo IPTU
-        </Text>
+        <Text style={styles.title}>{t("O seu saldo atual sera usado para gerar desconto no pagamento do seu próximo IPTU")}</Text>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>
-          Ao confirmar a operação, a prefeitura da sua cidade será notificada e
-          o seu saldo será zerado.
-        </Text>
+        <Text style={styles.title}>{t("Ao confirmar a operação, a prefeitura da sua cidade será notificada e o seu saldo será zerado.")}</Text>
       </View>
       <View style={styles.containerDefaultBtn}>
-        <DefaultButton text={"Voltar"} onPressButton={()=> router.back()} />
+        <DefaultButton text={t("Voltar")} onPressButton={()=> router.back()} />
         <DefaultButton
-          text={"Confirmar"}
+          text={t("Confirmar")}
           onPressButton={() => setModalConfirmEmailVisible(true)}
         />
       </View>
@@ -46,25 +42,25 @@ const DescontoIptu = () => {
       <CustomModal
         visible={modalConfirmEmailVisible}
         onClose={() => setModalConfirmEmailVisible(false)}
-        message="Insira o código enviado para seu email"
+        message={t("Insira o código enviado para seu email")}
         showInput={true}
         onConfirm={() => {
           setModalConfirmEmailVisible(false);
           setModalVisible(true)
         }}
-        confirmButtonText="Confirmar"
+        confirmButtonText={t("Confirmar")}
       />
        <CustomModal
         visible={modalVisible}
         onClose={() => {
           setModalVisible(false);
         }}
-        message="Seu saldo gerou um desconto de 10% no próximo IPTU!  Continue reciclando!"
+        message={t("Seu saldo gerou um desconto de 10% no próximo IPTU!  Continue reciclando!")}
         showInput={false}
         onConfirm={() => {
           setModalVisible(false);
         }}
-        confirmButtonText="confirmar"
+        confirmButtonText={t("confirmar")}
       />
 
       

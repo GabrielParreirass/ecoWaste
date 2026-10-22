@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -17,6 +18,7 @@ import mqtt, { MqttClient } from "mqtt";
 import { createMqttOptions } from "../../../../utils/mqttOptions";
 
 const Profile = () => {
+  const { t } = useLanguage();
   const [modalVisibleEditarDados, setModalVisibleEditarDados] = useState(false);
   const [modalVisibleDeletarDados, setModalVisibleDeletarDados] =
     useState(false);
@@ -52,7 +54,7 @@ const Profile = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedData = JSON.parse(message.toString());
-      window.alert(formatedData.message);
+      window.alert(t(formatedData.message));
     });
   }, []);
 
@@ -79,41 +81,41 @@ const Profile = () => {
           <Ionicons name="person" size={70} color="green" />
         </View>
       </View>
-      <Text style={styles.title}>Perfil de {authState!.username}</Text>
+      <Text style={styles.title}>{t("Perfil de ")}{authState!.username}</Text>
       <View style={styles.containerIcon}>
         <FontAwesome5 name="user-edit" size={30} color="green" />
       </View>
       <View style={styles.containerInput}>
         <TextInput
           style={styles.input}
-          placeholder="NOME"
+          placeholder={t("NOME")}
           value={nomeValue}
           onChangeText={setNomeValue}
         ></TextInput>
         <TextInput
           style={styles.input}
-          placeholder="EMAIL ATUAL"
+          placeholder={t("EMAIL ATUAL")}
           value={emailValue}
           onChangeText={setEmailValue}
         ></TextInput>
       </View>
       <View style={styles.containerButtons}>
         <Pressable style={styles.button} onPress={() => handleSubmit()}>
-          <Text style={styles.textButton}>OK</Text>
+          <Text style={styles.textButton}>{t("OK")}</Text>
         </Pressable>
 
         <Pressable
           style={styles.button}
           onPress={() => setModalVisibleDeletarDados(true)}
         >
-          <Text style={styles.textButton}>DELETAR</Text>
+          <Text style={styles.textButton}>{t("DELETAR")}</Text>
         </Pressable>
       </View>
 
       <CustomModal
         visible={modalVisibleEditarDados}
         onClose={() => setModalVisibleEditarDados(false)}
-        message="Para confirmar a edição de seus dados, insira o código de verificação enviado para seu email: "
+        message={t("Para confirmar a edição de seus dados, insira o código de verificação enviado para seu email: ")}
         showInput={true}
         inputValue={inputValue}
         setInputValue={setInputValue}
@@ -125,13 +127,13 @@ const Profile = () => {
       <CustomModal
         visible={modalVisibleDeletarDados}
         onClose={() => setModalVisibleDeletarDados(false)}
-        message="Seus dados serão deletados do nosso sistema. Seu Saldo de Eco Coin será doado para uma instituição que apoiamos. Você poderá criar uma nova conta a qualquer momento Confirme a sua escolha: "
+        message={t("Seus dados serão deletados do nosso sistema. Seu Saldo de Eco Coin será doado para uma instituição que apoiamos. Você poderá criar uma nova conta a qualquer momento Confirme a sua escolha: ")}
         inputValue={inputValue}
         setInputValue={setInputValue}
         onConfirm={() => {
           setModalVisibleDeletarDados(false);
         }}
-        closeButtonText="cancelar"
+        closeButtonText={t("cancelar")}
       />
     </ScrollView>
   );

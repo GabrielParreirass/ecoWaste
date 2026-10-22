@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../../../contexts/LanguageContext";
 import {
   ScrollView,
   StyleSheet,
@@ -22,12 +23,13 @@ import apiUrl from "../../../../../../utils/api_url.json";
 import { createMqttOptions } from "../../../../../../utils/mqttOptions";
 
 const Receber = () => {
+  const { t } = useLanguage();
   const [modalVisible, setModalVisible] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [qrValue, setQrValue] = useState("");
   const [valor, setValor] = useState("");
   const [pagador, setPagador] = useState("");
-  const [fraseModal, setFraseModal] = useState("");
+  const [fraseModal, setFraseModal] = useState<import("../../../../../../../i18n/translate").Message>("");
   const { authState } = useAuth();
   const loggedEmail = authState?.loggedEmail;
   const client = useRef<MqttClient | null>(null);
@@ -57,7 +59,7 @@ const Receber = () => {
     client.current.on("message", (topic, message) => {
       console.log(`📨 Mensagem no tópico ${topic}: ${message.toString()}`);
       const formatedData = JSON.parse(message.toString());
-      window.alert(formatedData.message)
+      window.alert(t(formatedData.message))
     });
   }, []);
 
@@ -67,7 +69,7 @@ const Receber = () => {
       setQrValue(jsonData);
       setShowQrCode(true);
     } catch (error) {
-      alert("Preencha todos os dados para gerar o QR CODE");
+      alert(t("Preencha todos os dados para gerar o QR CODE"));
     }
     setPagador("");
     setValor("");
@@ -99,7 +101,7 @@ const Receber = () => {
       {showQrCode ? (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>SEU QR CODE DE COBRANÇA:</Text>
+            <Text style={styles.title}>{t("SEU QR CODE DE COBRANÇA:")}</Text>
           </View>
           <View style={{ display: "flex", alignItems: "center" }}>
             <QRCode
@@ -111,7 +113,7 @@ const Receber = () => {
           </View>
           <View style={{ width: "70%", margin: "auto" }}>
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => setShowQrCode(false)}
             />
           </View>
@@ -119,32 +121,30 @@ const Receber = () => {
       ) : (
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>
-              INSIRA O NOME DO USUÁRIO E O VALOR A SER COBRADO:
-            </Text>
+            <Text style={styles.title}>{t("INSIRA O NOME DO USUÁRIO E O VALOR A SER COBRADO:")}</Text>
           </View>
           <View style={styles.containerInput}>
             <TextInput
-              placeholder="Usuário"
+              placeholder={t("Usuário")}
               style={styles.input}
               value={pagador}
               onChangeText={setPagador}
             />
             <TextInput
-              placeholder="Valor (E$)"
+              placeholder={t("Valor (E$)")}
               style={styles.input}
               value={valor}
               onChangeText={setValor}
             />
           </View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title}>COMO DESEJA COBRAR:</Text>
+            <Text style={styles.title}>{t("COMO DESEJA COBRAR:")}</Text>
           </View>
           <View style={styles.containerIcons}>
             <Pressable
               onPress={() => {
                 if (valor == "" || pagador == "") {
-                  alert("Preencha os campos para gerar o QR CODE");
+                  alert(t("Preencha os campos para gerar o QR CODE"));
                   return;
                 }
                 const jsonData = `{"emailDevedor":"${pagador}", "valor":"${valor}", "emailRecebedor":"${loggedEmail}"}`;
@@ -163,11 +163,11 @@ const Receber = () => {
             <Pressable
               onPress={() => {
                 if (valor == "" || pagador == "") {
-                  alert("Preencha os campos para gerar a CHAVE DE PAGAMENTO");
+                  alert(t("Preencha os campos para gerar a CHAVE DE PAGAMENTO"));
                   return;
                 }
                 setFraseModal(
-                  `Sua chave de cobrança é: ${loggedEmail}\nEla será enviada para: ${pagador}\nNo valor de: E$${valor},00`
+                  { key: "Sua chave de cobrança é: {{recipient}}\nEla será enviada para: {{payer}}\nNo valor de: E${{amount}},00", values: { recipient: loggedEmail, payer: pagador, amount: valor } }
                 );
                 setModalVisible(true);
               }}
@@ -191,7 +191,7 @@ const Receber = () => {
             }}
           >
             <DefaultButton
-              text={"Voltar"}
+              text={t("Voltar")}
               onPressButton={() => router.back()}
             />
           </View>

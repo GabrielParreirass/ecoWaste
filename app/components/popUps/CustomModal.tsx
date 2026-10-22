@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../contexts/LanguageContext";
 import React from "react";
 import {
   Modal,
@@ -10,6 +11,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import CustomModalProps from "../../../types/CustomModalProps";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import LanguageSwitcher from "../../../components/LanguageSwitcher";
 
 const CustomModal = ({
   visible,
@@ -24,8 +26,9 @@ const CustomModal = ({
   stackedButtons, 
   onMapPress,
 }: CustomModalProps) => {
+  const { t } = useLanguage();
   return (
-    <Modal transparent={true} visible={visible} animationType="fade">
+    <Modal transparent={true} visible={visible} animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <LinearGradient
           colors={["#0097b2", "#7ed957"]}
@@ -34,7 +37,7 @@ const CustomModal = ({
           style={styles.modalContainer}
         >
           <View style={{ marginVertical: 0 }}>
-            {message.split("\n").map((line, index) => (
+            {t(message).split("\n").map((line, index) => (
               <Text key={index} style={styles.message}>
                 {line}
               </Text>
@@ -48,7 +51,7 @@ const CustomModal = ({
               style={styles.mapButton}
             >
               <FontAwesome5 name="map-marked-alt" size={20} color="#fff" />
-              <Text style={styles.textMapButton}>Abrir no Google Maps</Text>
+              <Text style={styles.textMapButton}>{t("Abrir no Google Maps")}</Text>
             </TouchableOpacity>
           )}
 
@@ -57,7 +60,7 @@ const CustomModal = ({
               style={styles.input}
               value={inputValue}
               onChangeText={setInputValue}
-              placeholder="Digite aqui..."
+              placeholder={t("Digite aqui...")}
             />
           )}
 
@@ -76,7 +79,7 @@ const CustomModal = ({
               {closeButtonText ? (
                 <Text style={styles.textButton}>{closeButtonText}</Text>
               ) : (
-                <Text style={styles.textButton}>Fechar</Text>
+                <Text style={styles.textButton}>{t("Fechar")}</Text>
               )}
             </TouchableOpacity>
             
@@ -89,12 +92,13 @@ const CustomModal = ({
                 {confirmButtonText ? (
                   <Text style={styles.textButton}>{confirmButtonText}</Text>
                 ) : (
-                  <Text style={styles.textButton}>Confirmar</Text>
+                  <Text style={styles.textButton}>{t("Confirmar")}</Text>
                 )}
               </TouchableOpacity>
             )}
           </View>
         </LinearGradient>
+        <LanguageSwitcher />
       </View>
     </Modal>
   );

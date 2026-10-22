@@ -1,3 +1,4 @@
+import { useLanguage } from "../../../../../contexts/LanguageContext";
 import {
   View,
   Text,
@@ -77,6 +78,7 @@ const gerarMapaHTML = (latitude: number, longitude: number, coletas: any[]) => {
 };
 
 const ResiduosDisponiveis = () => {
+  const { t } = useLanguage();
   const [materialSelecionado, setMaterialSelecionado] = useState("");
   const [showList, setShowList] = useState(false);
   const [showHome, setShowHome] = useState(true);
@@ -156,7 +158,7 @@ const ResiduosDisponiveis = () => {
       }
       if (topic == `user/reservarColetaResponse/${requestId.current}`) {
         const formatedData = JSON.parse(message.toString());
-        window.alert(formatedData.message);
+        window.alert(t(formatedData.message));
 
         const payload = {
           email: userEmail,
@@ -212,15 +214,14 @@ const ResiduosDisponiveis = () => {
         </View>
       </View>
       <View style={styles.containerTitle}>
-        <Text style={styles.title}>Qual material deseja coletar:</Text>
+        <Text style={styles.title}>{t("Qual material deseja coletar:")}</Text>
       </View>
 
       {materialSelecionado ? (
         <View>
           {showHome ? (
             <View>
-              <Text style={styles.title}>
-                Material selecionado: {materialSelecionado}
+              <Text style={styles.title}>{t("Material selecionado: ")}{t(materialSelecionado)}
               </Text>
               <View style={styles.containerCards}>
                 <Pressable
@@ -231,12 +232,12 @@ const ResiduosDisponiveis = () => {
                   }}
                 >
                   <FontAwesome5 name="map-marked-alt" size={60} color="white" />
-                  <Text style={styles.textCard}>Ver no mapa</Text>
+                  <Text style={styles.textCard}>{t("Ver no mapa")}</Text>
                 </Pressable>
               </View>
               <View style={{ width: "70%", margin: "auto" }}>
                 <DefaultButton
-                  text={"Voltar"}
+                  text={t("Voltar")}
                   onPressButton={() => router.back()}
                 />
               </View>
@@ -245,26 +246,24 @@ const ResiduosDisponiveis = () => {
 
           {showMap ? (
             <View style={styles.mapContainer}>
-              <Text style={styles.title}>Locais de coleta próximos</Text>
+              <Text style={styles.title}>{t("Locais de coleta próximos")}</Text>
               <View style={styles.legendContainer}>
                 <View style={styles.legendItem}>
                   <View
                     style={[styles.legendColor, { backgroundColor: "green" }]}
                   />
-                  <Text style={styles.legendText}>Disponíveis</Text>
+                  <Text style={styles.legendText}>{t("Disponíveis")}</Text>
                 </View>
                 <View style={styles.legendItem}>
                   <View
                     style={[styles.legendColor, { backgroundColor: "orange" }]}
                   />
-                  <Text style={styles.legendText}>Encontro</Text>
+                  <Text style={styles.legendText}>{t("Encontro")}</Text>
                 </View>
               </View>
 
               {coletasFiltradas.length === 0 ? (
-                <Text style={{ textAlign: "center", marginVertical: 20 }}>
-                  Nenhuma coleta disponível para o material selecionado.
-                </Text>
+                <Text style={{ textAlign: "center", marginVertical: 20 }}>{t("Nenhuma coleta disponível para o material selecionado.")}</Text>
               ) : (
                 <View style={styles.map}>
                   <WebView
@@ -294,7 +293,7 @@ const ResiduosDisponiveis = () => {
 
               <View style={styles.mapButtonContainer}>
                 <DefaultButton
-                  text="Voltar"
+                  text={t("Voltar")}
                   onPressButton={() => {
                     setShowMap(false);
                     setShowHome(true);
@@ -307,15 +306,13 @@ const ResiduosDisponiveis = () => {
           {showList ? (
             <View>
               <View style={styles.containerTitle}>
-                <Text style={styles.title}>
-                  Selecione da lista ou pesquise pelo código.
-                </Text>
+                <Text style={styles.title}>{t("Selecione da lista ou pesquise pelo código.")}</Text>
               </View>
 
               <View style={styles.containerInput}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Pesquisar código"
+                  placeholder={t("Pesquisar código")}
                 />
                 <Pressable style={styles.btnInput}>
                   <FontAwesome5 name="search" size={24} color="white" />
@@ -327,7 +324,7 @@ const ResiduosDisponiveis = () => {
                     <View
                       style={[styles.legendColor, { backgroundColor: "green" }]}
                     />
-                    <Text style={styles.legendText}>Disponíveis</Text>
+                    <Text style={styles.legendText}>{t("Disponíveis")}</Text>
                   </View>
                   <View style={styles.legendItem}>
                     <View
@@ -336,7 +333,7 @@ const ResiduosDisponiveis = () => {
                         { backgroundColor: "orange" },
                       ]}
                     />
-                    <Text style={styles.legendText}>Encontro</Text>
+                    <Text style={styles.legendText}>{t("Encontro")}</Text>
                   </View>
                 </View>
                 {coletasFiltradas.map((i: any, index: any) => (
@@ -354,14 +351,14 @@ const ResiduosDisponiveis = () => {
                     }}
                   >
                     <Text style={styles.textKeys}>
-                      {i.type}: {i.peso}
+                      {t(i.type)}: {t(i.peso)}
                     </Text>
                   </Pressable>
                 ))}
               </View>
               <View style={{ width: "70%", margin: "auto", paddingTop: 10 }}>
                 <DefaultButton
-                  text={"Voltar"}
+                  text={t("Voltar")}
                   onPressButton={() => {
                     setShowList(false);
                     setShowHome(true);
@@ -375,36 +372,36 @@ const ResiduosDisponiveis = () => {
         <View style={styles.mainContainerCards}>
           <View style={styles.subContainerCards}>
             <CardNovaColeta
-              text="Papel"
+              text={t("Papel")}
               background="blue"
               onPressCard={() => setMaterialSelecionado("Papel")}
             />
             <CardNovaColeta
-              text="Metal"
+              text={t("Metal")}
               background="#ffb800"
               onPressCard={() => setMaterialSelecionado("Metal")}
             />
           </View>
           <View style={styles.subContainerCards}>
             <CardNovaColeta
-              text="Plástico"
+              text={t("Plástico")}
               background="red"
               onPressCard={() => setMaterialSelecionado("Plastico")}
             />
             <CardNovaColeta
-              text="Orgânicos"
+              text={t("Orgânicos")}
               background="brown"
               onPressCard={() => setMaterialSelecionado("Organico")}
             />
           </View>
           <View style={styles.subContainerCards}>
             <CardNovaColeta
-              text="Vidro"
+              text={t("Vidro")}
               background="green"
               onPressCard={() => setMaterialSelecionado("Vidro")}
             />
             <CardNovaColeta
-              text="Entulhos"
+              text={t("Entulhos")}
               background="gray"
               onPressCard={() => setMaterialSelecionado("Entulhos")}
             />
@@ -416,9 +413,9 @@ const ResiduosDisponiveis = () => {
         <CustomModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
-          message={`Material selecionado: ${selectedColeta.type} \n Quantidade: ${selectedColeta.peso} \n Horario: ${selectedColeta.horario} \n Dia da semana: ${selectedColeta.dia}`}
+          message={t("Material selecionado: {{material}} \n Quantidade: {{quantity}} \n Horario: {{time}} \n Dia da semana: {{day}}", { material: t(selectedColeta.type), quantity: t(selectedColeta.peso), time: t(selectedColeta.horario), day: t(selectedColeta.dia) })}
           showInput={false}
-          confirmButtonText="Agendar"
+          confirmButtonText={t("Agendar")}
           onConfirm={() => {
             handleAgendarColeta(selectedColeta);
             setModalVisible(false);
