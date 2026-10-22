@@ -47,49 +47,81 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const client = useRef<MqttClient | null>(null);
   const requestId = useRef(Date.now().toString());
 
+  const waitForConnection = () => {
+    if (client.current?.connected) {
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      const handleConnect = () => {
+        clearTimeout(timeout);
+        client.current?.removeListener("error", handleError);
+        resolve();
+      };
+
+      const handleError = (error: Error) => {
+        clearTimeout(timeout);
+        client.current?.removeListener("connect", handleConnect);
+        reject(error);
+      };
+
+      const timeout = setTimeout(() => {
+        client.current?.removeListener("connect", handleConnect);
+        client.current?.removeListener("error", handleError);
+        reject(new Error(`Tempo esgotado ao conectar ao broker MQTT em ${API_URL}`));
+      }, 10000);
+
+      client.current?.once("connect", handleConnect);
+      client.current?.once("error", handleError);
+      client.current?.reconnect();
+    });
+  };
+
   useEffect(() => {
+    const options = {
+      ...createMqttOptions(),
+      reconnectPeriod: 1000,
+      connectTimeout: 10000,
+    };
+    client.current = mqtt.connect(API_URL, options);
+
+    client.current.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+
+      const topics = [
+        `user/cadastroResponse/${requestId.current}`,
+        `user/confirmOtpResponse/${requestId.current}`,
+        `user/loginResponse/${requestId.current}`,
+      ];
+
+      topics.forEach((topic) => {
+        client.current?.subscribe(topic, (err) => {
+          if (!err) {
+            console.log(`📡 Inscrito no tópico ${topic}`);
+          } else {
+            console.error(`❌ Erro ao se inscrever no tópico ${topic}:`, err);
+          }
+        });
+      });
+    });
+
+    client.current.on("close", () => {
+      console.log("❌ Conexão com broker MQTT foi encerrada");
+    });
+
+    client.current.on("error", (err) => {
+      console.error("❌ Erro no cliente MQTT:", err);
+    });
+
+    client.current.on("offline", () => {
+      console.log("⚠️ Cliente MQTT offline");
+    });
+
     const loadToken = async () => {
       const token = await SecureStore.getItemAsync(TOKEN_KEY);
       const username = await SecureStore.getItemAsync("username");
       const loggedEmail = await SecureStore.getItemAsync("loggedEmail");
       const role = await SecureStore.getItemAsync("role");
-      const options = {
-        clientId: "frontend_" + Math.random().toString(16).substr(2, 8),
-        username: "ecowaste", 
-        password: "ecow@ste", 
-      };
-
-      client.current = mqtt.connect(API_URL, options);
-
-      client.current.on("connect", () => {
-        console.log("✅ Conectado ao broker MQTT");
-
-        const topics = [
-          `user/cadastroResponse/${requestId.current}`,
-          `user/confirmOtpResponse/${requestId.current}`,
-          `user/loginResponse/${requestId.current}`,
-        ];
-
-        topics.forEach((topic) => {
-          client.current?.subscribe(topic, (err) => {
-            if (!err) {
-              console.log(`📡 Inscrito no tópico ${topic}`);
-            }
-          });
-        });
-      });
-
-      client.current.on("close", () => {
-        console.log("❌ Conexão com broker MQTT foi encerrada");
-      });
-
-      client.current.on("error", (err) => {
-        console.error("❌ Erro no cliente MQTT:", err);
-      });
-
-      client.current.on("offline", () => {
-        console.log("⚠️ Cliente MQTT offline");
-      });
 
       if (token) {
         setAuthState({
@@ -111,12 +143,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     loadToken();
+
+    return () => {
+      client.current?.end(true);
+      client.current = null;
+    };
   }, []);
 
-  const waitForResponse = (topicFilter: string) => {
+  const waitForResponse = async (topicFilter: string) => {
+    await waitForConnection();
+
     return new Promise<any>((resolve) => {
+      const timeout = setTimeout(() => {
+        client.current?.removeListener("message", handleMessage);
+        resolve({
+          verified: false,
+          create: false,
+          message: "O servidor não respondeu. Verifique o broker MQTT e tente novamente.",
+        });
+      }, 10000);
+
       const handleMessage = (topic: string, message: Buffer) => {
         if (topic === topicFilter) {
+          clearTimeout(timeout);
           const parsed = JSON.parse(message.toString());
           resolve(parsed);
           client.current?.removeListener("message", handleMessage);
@@ -142,8 +191,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
     const topicResponse = `user/cadastroResponse/${requestId.current}`;
 
+    await waitForConnection();
+    const resultPromise = waitForResponse(topicResponse);
     client.current?.publish("user/cadastro", JSON.stringify(payload));
-    const result = await waitForResponse(topicResponse);
+    const result = await resultPromise;
 
     return result;
   };
@@ -156,8 +207,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
     const topicResponse = `user/confirmOtpResponse/${requestId.current}`;
 
+    await waitForConnection();
+    const responsePromise = waitForResponse(topicResponse);
     client.current?.publish("user/confirmOtp", JSON.stringify(payload));
-    const response = await waitForResponse(topicResponse);
+    const response = await responsePromise;
 
     if (response.otpVerified) {
       const { token, username, role } = response;
@@ -193,8 +246,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const payload = { email, senha: password, requestId: requestId.current };
     const topicResponse = `user/loginResponse/${requestId.current}`;
 
-    client.current?.publish("user/login", JSON.stringify(payload));
-    const result = await waitForResponse(topicResponse);
+    await waitForConnection();
+    if (!client.current?.connected) {
+      throw new Error(`Cliente MQTT não está conectado em ${API_URL}.`);
+    }
+
+    const resultPromise = waitForResponse(topicResponse);
+    client.current.publish("user/login", JSON.stringify(payload), (error) => {
+      if (error) {
+        console.error("❌ Erro ao publicar login no MQTT:", error);
+      }
+    });
+    const result = await resultPromise;
 
     return result.verified;
   };

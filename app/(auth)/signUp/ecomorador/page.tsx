@@ -103,7 +103,15 @@ const EcotaxistaSignUp = () => {
       otp: otpInput,
       requestId: requestId.current,
     };
-    client.current?.publish("user/verificateOtp", JSON.stringify(payload));
+    const publish = () => {
+      client.current?.publish("user/verificateOtp", JSON.stringify(payload));
+    };
+
+    if (client.current?.connected) {
+      publish();
+    } else {
+      client.current?.once("connect", publish);
+    }
   };
 
   return (
