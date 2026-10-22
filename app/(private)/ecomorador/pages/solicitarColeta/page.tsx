@@ -136,7 +136,7 @@ const SolicitarColeta = () => {
       )}
 
       {showQrCodeScanner && (
-        <View style={StyleSheet.absoluteFillObject}>
+        <View style={StyleSheet.absoluteFill}>
           <QRCodeScanner
             onScan={(data: any) => {
               console.log("QR code lido:", data);

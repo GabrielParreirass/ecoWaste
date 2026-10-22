@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable } from "react-native";
-import { router, Router } from "expo-router";
+import { router } from "expo-router";
 import { Image } from "react-native";
 import { useState } from "react";
 

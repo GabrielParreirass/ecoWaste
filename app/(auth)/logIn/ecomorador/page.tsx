@@ -30,12 +30,18 @@ const EcotaxistaLogIn = () => {
   const login = async () => {
     console.log("Email do LOGIN: ", emailValue);
 
-    const result = await onLogin!(emailValue, psswdValue);
-    if (result) {
-      console.log("Estou aqui!: ", result);
-      setModalVisible(true);
-    } else {
-      alert("Falha no login");
+    try {
+      const result = await onLogin!(emailValue, psswdValue);
+      if (result) {
+        console.log("Estou aqui!: ", result);
+        setModalVisible(true);
+      } else {
+        alert("Falha no login");
+      }
+    } catch (error) {
+      console.error("❌ Falha ao fazer login:", error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Falha MQTT: ${message}`);
     }
   };
 
@@ -54,7 +60,7 @@ const EcotaxistaLogIn = () => {
     if (emailValue.length == 0 || psswdValue.length == 0) {
       setAlertModalVisible(true);
     } else {
-      login();
+      await login();
     }
   };
 
